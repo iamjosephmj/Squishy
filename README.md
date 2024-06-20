@@ -31,7 +31,7 @@ Add the following to your project's build.gradle.kts file
 
 ```kotlin
 dependencies {
-    implementation("com.github.iamjosephmj:Squishy:1.0.1")
+    implementation("com.github.iamjosephmj:Squishy:1.0.3")
 }
 ```
 
