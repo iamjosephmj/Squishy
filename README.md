@@ -4,8 +4,9 @@
 # Squishy
 
 <p>
-Squishy is a lightweight library that let's the developer control the overscroll effect of the parent container/child composabled according to the Overscroll and fling from the user input. The library exposes all the necessary parameters needed for the developer to control the behaviours. Here is the prototype of the scroll/fling behaviour when it comes to overscroll.
+Squishy is a lightweight library that lets developers control the overscroll effect of the parent container/child composables based on user input. The library exposes all the necessary parameters for developers to control the behavior. Here is the prototype of the scroll/fling behavior in relation to overscroll.
 </p>
 
 
-![working](https://github.com/iamjosephmj/Squishy/assets/18631114/5f179420-fa6d-483b-a4dd-a3362eb4af7d)
+https://github.com/iamjosephmj/Squishy/assets/18631114/bce28894-89d3-4e37-a87b-babd590bbbcc
+
