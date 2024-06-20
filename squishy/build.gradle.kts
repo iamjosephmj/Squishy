@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("maven-publish")
+
 }
 
 android {
@@ -42,4 +44,18 @@ android {
 dependencies {
     implementation(libs.androidx.foundation.android)
     implementation(libs.androidx.appcompat)
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create("release", MavenPublication::class) {
+                from(components["release"])
+
+                groupId = "io.iamjosephmj.squishy"
+                artifactId = "release"
+                version = "1.0.0"
+            }
+        }
+    }
 }
