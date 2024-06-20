@@ -10,7 +10,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 26
+        minSdk = 21
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -54,14 +54,14 @@ afterEvaluate {
 
                 groupId = "io.iamjosephmj.squishy"
                 artifactId = "release"
-                version = "1.0.1"
+                version = "1.0.2"
             }
 
             create("debug", MavenPublication::class) {
                 from(components["debug"])
                 groupId = "io.iamjosephmj.squishy"
                 artifactId = "release"
-                version = "1.0.1"
+                version = "1.0.2"
             }
         }
     }
