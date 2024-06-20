@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":squishy"))
+    implementation(libs.squishy)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.material3)
