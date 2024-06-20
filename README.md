@@ -1,6 +1,11 @@
 
 ![Squishy_octopus](https://github.com/iamjosephmj/Squishy/assets/18631114/339314ba-95ee-4ef4-b001-55f1279a47b8)
 
+[![License MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://github.com/iamjosephmj/squishy/blob/main/LICENSE)
+[![Public Yes](https://img.shields.io/badge/Public-yes-green.svg?style=flat)]()
+[![](https://jitpack.io/v/iamjosephmj/Squishy.svg)](https://jitpack.io/#iamjosephmj/Squishy)
+
+
 # Squishy
 
 <p>
