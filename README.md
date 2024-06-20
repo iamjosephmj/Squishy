@@ -15,6 +15,26 @@ Squishy is a lightweight library that lets developers control the overscroll eff
 
 https://github.com/iamjosephmj/Squishy/assets/18631114/abe84672-1c56-49e6-99b7-67811cf60751
 
+## Gradle
+
+Add the following to your project's root build.gradle.kts file
+
+```kotlin
+ repositories {
+        maven {
+            setUrl("https://jitpack.io")
+        }
+    }
+```
+
+Add the following to your project's build.gradle.kts file
+
+```kotlin
+dependencies {
+    implementation("com.github.iamjosephmj:Squishy:1.0.1")
+}
+```
+
 
 ### BaseOverscrollEffect
 
