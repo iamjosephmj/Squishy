@@ -97,7 +97,7 @@ Column(
     modifier = Modifier
         .fillMaxSize()
         .overScroll(
-            isParentOverScrollEnabled = true,
+            isParentOverScrollEnabled = true, // We can change this to false and use the child Overscroll according to the requirement. 
             overscrollEffect = overscrollEffect,
             orientation = Orientation.Vertical
         )
@@ -105,6 +105,38 @@ Column(
     // Content here
 }
 ```
+
+## Adding child overscroll
+
+```kotlin
+Column(
+    modifier = Modifier
+        .fillMaxSize()
+        .overScroll(
+            isParentOverScrollEnabled = false, 
+            overscrollEffect = overscrollEffect,
+            orientation = Orientation.Vertical
+        )
+) {
+      for (item in 1..50) {
+          Button(
+             onClick = {},
+             modifier = Modifier
+                                .fillMaxWidth()
+                                .childOverScrollSupport(overScroll)
+                                .height(50.dp)
+                                .padding(1.dp)
+          ) {
+                Text(
+                    text = "item$item", textAlign = TextAlign.Center
+                    )
+            }
+
+         }
+}
+```
+
+
 
 ### Getting Started
 
