@@ -8,5 +8,5 @@ Squishy is a lightweight library that lets developers control the overscroll eff
 </p>
 
 
-https://github.com/iamjosephmj/Squishy/assets/18631114/bce28894-89d3-4e37-a87b-babd590bbbcc
+https://github.com/iamjosephmj/Squishy/assets/18631114/abe84672-1c56-49e6-99b7-67811cf60751
 
