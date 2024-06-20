@@ -56,6 +56,13 @@ afterEvaluate {
                 artifactId = "release"
                 version = "1.0.0"
             }
+
+            create("debug", MavenPublication::class) {
+                from(components["debug"])
+                groupId = "io.iamjosephmj.squishy"
+                artifactId = "release"
+                version = "1.0.0"
+            }
         }
     }
 }
