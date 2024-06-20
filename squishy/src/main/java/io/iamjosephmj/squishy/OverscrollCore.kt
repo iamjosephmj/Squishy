@@ -1,9 +1,9 @@
 package io.iamjosephmj.squishy
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationVector
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.OverscrollEffect
 import androidx.compose.foundation.gestures.FlingBehavior
@@ -29,10 +29,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 abstract class BaseOverscrollEffect(
     private val scope: CoroutineScope,
-    val maxOverscroll: Float = 1000f,
-    val orientation: Orientation = Orientation.Vertical,
-    private val animatable: Animatable<Float, out AnimationVector> = Animatable(0f),
-    private val animationSpec: AnimationSpec<Float> = tween(500)
+    val orientation: Orientation,
+    private val maxOverscroll: Float,
+    private val animatable: Animatable<Float, out AnimationVector>,
+    private val animationSpec: AnimationSpec<Float>
 ) : OverscrollEffect {
 
     override fun applyToScroll(
@@ -135,6 +135,7 @@ fun Modifier.overScroll(
 
 }
 
+@SuppressLint("UnnecessaryComposedModifier")
 fun Modifier.childOverScrollSupport(
     overscrollEffect: BaseOverscrollEffect
 ): Modifier = composed {
