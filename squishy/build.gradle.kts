@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
     id("maven-publish")
 
 }
@@ -14,13 +15,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
 
     buildTypes {
@@ -54,14 +48,14 @@ afterEvaluate {
 
                 groupId = "io.iamjosephmj.squishy"
                 artifactId = "release"
-                version = "1.0.3"
+                version = "1.2.0"
             }
 
             create("debug", MavenPublication::class) {
                 from(components["debug"])
                 groupId = "io.iamjosephmj.squishy"
                 artifactId = "release"
-                version = "1.0.3"
+                version = "1.2.0"
             }
         }
     }
