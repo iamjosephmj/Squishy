@@ -8,9 +8,9 @@
       "description": "Toolchain pins validated as a set with Navigation 3 1.0.0",
       "enabled": false,
       "matchPackageNames": [
-        "org.jetbrains.kotlin:kotlin-gradle-plugin",
-        "org.jetbrains.kotlin.android",
-        "org.jetbrains.kotlin.plugin.compose",
+        "org.jetbrains.kotlin",
+        "org.jetbrains.kotlin*",
+        "kotlin",
         "com.android.application",
         "com.android.library",
         "androidx.compose.foundation:foundation-android",
