@@ -38,18 +38,6 @@ and the leftover velocity becomes a bounce.*
 That's the entire core API. Everything below is the same state object, wearing
 different clothes.
 
-## The model
-
-Five packages, five responsibilities:
-
-| Package | Owns |
-|---|---|
-| `…squishy.physics` | The engine (`BaseOverscrollEffect`), drag curves, per-edge config, `OverScrollConfig` |
-| `…squishy.scroll` | The scroll pipeline: `Modifier.overScroll`, `OverScrollArea`, the measured layout |
-| `…squishy.visual` | The plugin SPI (`OverscrollVisual`), built-ins, `PushDownOverscrollEffect` |
-| `…squishy.child` | Per-item DSL (`childOverScrollSupport`) and tag roles (`overscrollRole`) |
-| `…squishy.state` | `OverScrollState` and its `remember` factories |
-
 ## Recipes
 
 ### Make the whole list squish
@@ -207,6 +195,9 @@ Clone the repo and run it to feel every recipe above.
 
 Issues and PRs welcome — raise PRs against the default branch, ensure
 `./gradlew squishy:test app:lint` passes, and keep the lint analyzer clean.
+Internally the library is organized into `physics` / `scroll` / `visual` /
+`child` / `state` packages — one concern per file — so fixes land where
+you'd expect.
 
 ## License
 
