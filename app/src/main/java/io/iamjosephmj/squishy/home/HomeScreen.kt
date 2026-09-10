@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import io.iamjosephmj.flinger.behaviours.FlingPresets
 import io.iamjosephmj.squishy.child.OverScrollRoles
 import io.iamjosephmj.squishy.child.overscrollRole
 import io.iamjosephmj.squishy.child.rememberOverScrollRoles
@@ -59,6 +60,7 @@ fun HomeScreen(onOpen: (DemoScreen) -> Unit) {
         CosmicBackground(Modifier.fillMaxSize())
         OverScrollArea(state, Modifier.fillMaxSize(), containerEffect = false) {
             LazyColumn(
+                flingBehavior = FlingPresets.ultraSmooth(),
                 contentPadding = PaddingValues(
                     start = 20.dp,
                     end = 20.dp,

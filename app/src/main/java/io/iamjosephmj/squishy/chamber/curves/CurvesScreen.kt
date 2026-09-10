@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.iamjosephmj.flinger.behaviours.FlingPresets
 import io.iamjosephmj.squishy.navigation.DemoScreen
 import io.iamjosephmj.squishy.scroll.overScroll
 import io.iamjosephmj.squishy.state.rememberOverScrollState
@@ -137,7 +138,7 @@ fun CurvesScreen(onBack: () -> Unit, viewModel: CurvesViewModel = viewModel()) {
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp, vertical = 10.dp)
-                    .overScroll(state),
+                    .overScroll(state, flingBehavior = FlingPresets.ultraSmooth()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 repeat(14) { index ->

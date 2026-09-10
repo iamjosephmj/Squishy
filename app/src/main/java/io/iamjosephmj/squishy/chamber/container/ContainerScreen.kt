@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.iamjosephmj.flinger.behaviours.FlingPresets
 import io.iamjosephmj.squishy.navigation.DemoScreen
 import io.iamjosephmj.squishy.scroll.overScroll
 import io.iamjosephmj.squishy.state.rememberOverScrollState
@@ -27,7 +28,7 @@ fun ContainerScreen(onBack: () -> Unit) {
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
-                    .overScroll(state),
+                    .overScroll(state, flingBehavior = FlingPresets.ultraSmooth()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 repeat(18) { index ->

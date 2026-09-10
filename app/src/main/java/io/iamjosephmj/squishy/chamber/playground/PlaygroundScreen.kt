@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.iamjosephmj.flinger.behaviours.FlingPresets
 import io.iamjosephmj.squishy.child.childOverScrollSupport
 import io.iamjosephmj.squishy.navigation.DemoScreen
 import io.iamjosephmj.squishy.physics.OverScrollConfig
@@ -68,7 +69,7 @@ fun PlaygroundScreen(onBack: () -> Unit, viewModel: PlaygroundViewModel = viewMo
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
-                    .overScroll(state, containerEffect = false),
+                    .overScroll(state, containerEffect = false, flingBehavior = FlingPresets.ultraSmooth()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 repeat(14) { index ->

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.iamjosephmj.flinger.behaviours.FlingPresets
 import io.iamjosephmj.squishy.child.childOverScrollSupport
 import io.iamjosephmj.squishy.navigation.DemoScreen
 import io.iamjosephmj.squishy.scroll.overScroll
@@ -28,7 +29,7 @@ fun ChildModeScreen(onBack: () -> Unit) {
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
-                    .overScroll(state, containerEffect = false),
+                    .overScroll(state, containerEffect = false, flingBehavior = FlingPresets.ultraSmooth()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 repeat(18) { index ->

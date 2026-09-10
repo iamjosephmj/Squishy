@@ -131,6 +131,19 @@ Curves are pluggable: `Linear`, `RubberBand(stiffness)`, or `Custom` with any
 `(rawDelta, current, max) -> Float` mapping — an exponential wall is two lines.
 A disabled edge passes its delta through to parent scrollables instead of eating it.
 
+Fling momentum plugs in the same way — both `overScroll` and your lazy list
+inside `OverScrollArea` take a standard `FlingBehavior`, so
+[Flinger](https://github.com/iamjosephmj/flinger) pairs with it in one line:
+
+```kotlin
+Column(
+    Modifier.overScroll(
+        state,
+        flingBehavior = FlingPresets.ultraSmooth(),
+    )
+) { /* rows */ }
+```
+
 ## Tags
 
 RecyclerView veterans, you already know this one. `setTag()`, but the tag carries

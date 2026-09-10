@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.iamjosephmj.flinger.behaviours.FlingPresets
 import io.iamjosephmj.squishy.child.overscrollRole
 import io.iamjosephmj.squishy.child.rememberOverScrollRoles
 import io.iamjosephmj.squishy.navigation.DemoScreen
@@ -48,7 +49,7 @@ fun RolesScreen(onBack: () -> Unit) {
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
-                    .overScroll(state, containerEffect = false),
+                    .overScroll(state, containerEffect = false, flingBehavior = FlingPresets.ultraSmooth()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Column(

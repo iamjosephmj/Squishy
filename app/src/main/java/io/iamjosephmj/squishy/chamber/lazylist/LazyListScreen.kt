@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.iamjosephmj.flinger.behaviours.FlingPresets
 import io.iamjosephmj.squishy.navigation.DemoScreen
 import io.iamjosephmj.squishy.physics.OverScrollConfig
 import io.iamjosephmj.squishy.scroll.OverScrollArea
@@ -34,6 +35,7 @@ fun LazyListScreen(onBack: () -> Unit) {
                     Modifier
                         .fillMaxSize()
                         .padding(horizontal = 20.dp),
+                    flingBehavior = FlingPresets.ultraSmooth(),
                     contentPadding = PaddingValues(vertical = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
