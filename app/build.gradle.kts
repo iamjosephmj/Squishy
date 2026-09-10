@@ -47,6 +47,7 @@ android {
 dependencies {
     implementation(project(":squishy"))
     implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
