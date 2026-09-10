@@ -1,115 +1,103 @@
 # Squishy
 
-![Squishy_octopus](https://github.com/iamjosephmj/Squishy/assets/18631114/339314ba-95ee-4ef4-b001-55f1279a47b8)
+> Plugin-driven overscroll for Jetpack Compose.
 
-[![License MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://github.com/iamjosephmj/squishy/blob/main/LICENSE)
-[![Public Yes](https://img.shields.io/badge/Public-yes-green.svg?style=flat)]()
-[![](https://jitpack.io/v/iamjosephmj/Squishy.svg)](https://jitpack.io/#iamjosephmj/Squishy)
+![License MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)
+![Public](https://img.shields.io/badge/Public-yes-green.svg?style=flat)
+[![](https://jitpack.io/v/iamjosephmj/Squishy.svg)](https://jitpack.io/#/iamjosephmj/Squishy)
+![API 21+](https://img.shields.io/badge/API-21%2B-brightgreen)
+![Tests](https://img.shields.io/badge/tests-94%20passing-brightgreen)
 
-Squishy is a lightweight library for controlling the overscroll effect of containers or
-child composables based on user input. v2 is a ground-up rewrite of the overscroll
-pipeline: one scroll pipeline per container, no fighting with the platform stretch effect,
-correct nested-scroll consumption, and LazyList support.
+![Squishy demo](docs/demo.gif)
 
-## Gradle Setup
+One state object drives everything: scroll physics, edge behavior, visual plugins,
+and per-item animations — for plain columns, LazyLists, and anything that scrolls.
 
-Add this to your root `build.gradle.kts`:
+## Quick start
 
 ```kotlin
-repositories {
-    maven { setUrl("https://jitpack.io") }
-}
+repositories { maven { setUrl("https://jitpack.io") } }
+
+dependencies { implementation("com.github.iamjosephmj:Squishy:2.1.0") }
 ```
 
-Add this to your module `build.gradle.kts`:
-
 ```kotlin
-dependencies {
-    implementation("com.github.iamjosephmj:Squishy:2.1.0")
-}
-```
+val state = rememberOverScrollState(
+    config = OverScrollConfig(curve = OverscrollCurve.RubberBand()),
+)
 
-## Quick start (plain container)
-
-```kotlin
-val state = rememberOverScrollState()
-
-Column(
-    modifier = Modifier
-        .fillMaxSize()
-        .overScroll(state)
-) {
+Column(Modifier.fillMaxSize().overScroll(state)) {
     // content taller than the screen
 }
 ```
 
-Drag past the edge of the content and the whole container squishes, then settles back.
+Drag past an edge — the container rubber-bands and settles back. Fling into an
+edge — leftover velocity becomes a bounce. That's the whole core API.
 
-## Child-content mode
+## The model
 
-Children can participate in the parent's overscroll (each child moves with the squish):
+Five packages, five responsibilities:
+
+| Package | Owns |
+|---|---|
+| `…squishy.physics` | The engine (`BaseOverscrollEffect`), drag curves, per-edge config, `OverScrollConfig` |
+| `…squishy.scroll` | The scroll pipeline: `Modifier.overScroll`, `OverScrollArea`, the measured layout |
+| `…squishy.visual` | The plugin SPI (`OverscrollVisual`), built-ins, `PushDownOverscrollEffect` |
+| `…squishy.child` | Per-item DSL (`childOverScrollSupport`) and tag roles (`overscrollRole`) |
+| `…squishy.state` | `OverScrollState` and its `remember` factories |
+
+## Recipes
+
+### Bounce the whole container
+
+`overScroll` is one scrollable that owns both scrolling and the effect — the
+platform stretch never fights you.
 
 ```kotlin
-Column(
-    modifier = Modifier
-        .fillMaxSize()
-        .overScroll(state, containerEffect = false)
-) {
-    for (item in 1..50) {
-        Button(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .childOverScrollSupport(state)
-                .height(50.dp)
-        ) {
-            Text(text = "item$item")
-        }
+Column(Modifier.overScroll(state)) { /* rows */ }
+```
+
+### Items instead of the box
+
+Suppress the container visual; every child carries the overscroll:
+
+```kotlin
+Column(Modifier.overScroll(state, containerEffect = false)) {
+    rows.forEach { row ->
+        Text(row, Modifier.childOverScrollSupport(state))
     }
 }
 ```
 
-`containerEffect = false` suppresses the container's own visual so the children move instead
-of double-moving.
+### LazyColumn and any external scrollable
 
-## LazyColumn / LazyRow / external scroll containers
-
-Lazy lists own their scroll pipeline internally, so use `OverScrollArea` — it feeds edge
-leftovers into Squishy and suppresses the platform stretch effect inside:
+Lazy lists own their pipeline internally, so route them through `OverScrollArea` —
+edge leftovers feed the effect, the platform stretch is suppressed:
 
 ```kotlin
-val state = rememberOverScrollState()
-
 OverScrollArea(state, Modifier.fillMaxSize()) {
-    LazyColumn(Modifier.fillMaxSize()) {
-        items(50) { item ->
-            Text("item $item", Modifier.fillMaxWidth().height(50.dp))
-        }
-    }
+    LazyColumn(Modifier.fillMaxSize()) { /* items */ }
 }
 ```
 
-`OverScrollArea` works with any scrollable that participates in nested scroll.
-
-## Plugins & custom effects (v2.1)
-
-Pick a built-in visual, tune behavior with a config, or write your own in three lines:
+### Visual plugins
 
 ```kotlin
 val state = rememberOverScrollState(
     visual = OverscrollVisuals.zoom(minScaleX = 0.9f) + OverscrollVisuals.fade(),
-    config = OverScrollConfig(
-        maxOverscroll = 600f,
-        curve = OverscrollCurve.RubberBand(),
-        topEdge = EdgeConfig(enabled = true, maxOverscroll = 300f),
-    ),
+    config = OverScrollConfig(maxOverscroll = 600f, curve = OverscrollCurve.RubberBand()),
 )
 ```
 
-Built-ins: `pushDown()`, `zoom()`, `rotate()`, `skew()`, `tilt()`, `blur()` (blur
-requires API 31+; pass `minAlpha < 1f` to also fade on older devices), `fade()` — combine with `+`.
+Built-ins: `pushDown()`, `zoom()`, `rotate()`, `skew()`, `tilt()`,
+`blur()` (API 31+; pass `minAlpha < 1f` to also fade on older devices), `fade()` —
+combine with `+`. Per-child application pairs with `containerEffect = false`:
 
-Custom visual:
+```kotlin
+Text(item, Modifier.childOverScrollSupport(state, visual = OverscrollVisuals.tilt()))
+```
+
+Write your own in three lines — visuals are pure `(value, bounds, orientation) -> Modifier`:
 
 ```kotlin
 val wobble = OverscrollVisual { value, bounds, _ ->
@@ -117,98 +105,81 @@ val wobble = OverscrollVisual { value, bounds, _ ->
 }
 ```
 
-Per-item animations with the child DSL — `value` (signed px), `progress` (0..1),
-`direction` (Top/Bottom/None) inside a `graphicsLayer` block:
+### Physics
 
 ```kotlin
-Text(
-    "row",
-    Modifier.childOverScrollSupport(state) {
-        translationY = value * (1f - index * 0.03f)
-        rotationZ = progress * 6f
-    },
+OverScrollConfig(
+    maxOverscroll = 800f,
+    curve = OverscrollCurve.RubberBand(stiffness = 3f),  // Linear / RubberBand / Custom
+    settleSpec = tween(500),
+    absorbVelocityFactor = 0.06f,     // fling-to-bounce strength
+    absorbDurationMillis = 120,
+    minAbsorbVelocity = 50f,
+    topEdge = EdgeConfig(enabled = true, maxOverscroll = 300f),
+    bottomEdge = EdgeConfig(enabled = false),
 )
 ```
 
-Apply a plugin visual to each child instead of the container — pair it with
-`overScroll(state, containerEffect = false)` so the container stays static. Let the visual
-drive the item's response; add a transform lambda only for effects the visual doesn't
-already provide (translation on top of a visual double-applies):
+A disabled edge lets the delta pass through to ancestors and skips fling absorb.
+`OverscrollCurve.Custom` takes any `(rawDelta, current, max) -> Float` mapping.
+
+### Tag-based animations — the `setTag()` pattern
+
+Register named animations once, then tag items. The scope exposes
+`value` (px), `progress` (0–1), `direction`, and the item's `index` — so one
+registered transform can vary per position (stagger):
 
 ```kotlin
+val roles = rememberOverScrollRoles {
+    transform("header") { translationY = value * 0.10f }
+    transform("row") { translationY = value * (0.22f + index * 0.012f) }
+}
+
 Column(Modifier.overScroll(state, containerEffect = false)) {
-    items.forEachIndexed { index, item ->
-        Text(item, Modifier.childOverScrollSupport(state, visual = OverscrollVisuals.zoom()))
+    Text("Title", Modifier.overscrollRole(state, roles, "header"))
+    items.forEachIndexed { i, item ->
+        Text(item, Modifier.overscrollRole(state, roles, "row", index = i))
     }
 }
 ```
 
-`OverScrollConfig`: `maxOverscroll`, `curve` (Linear / RubberBand(stiffness) / Custom),
-`settleSpec`, `absorbVelocityFactor`, `absorbDurationMillis`, `minAbsorbVelocity`,
-`topEdge`/`bottomEdge` (`EdgeConfig(enabled, maxOverscroll)`; a disabled edge lets the
-delta pass through to ancestors and skips fling absorb). `OverscrollDirection.Top` maps to
-the leading edge (top for vertical, start for horizontal).
-
-- Hoist or `remember` custom `OverscrollVisual` instances and `Custom` curve lambdas — they are
-  compared by identity when keying internal state.
-- Built-in factories are `@Composable` and already remembered, so inline usage is safe.
-
-## Custom effects
-
-Extend `BaseOverscrollEffect` and override `effectModifier` to draw your own effect.
-`value` is the current overscroll offset (in pixels, clamped to `maxOverscroll`):
+Roles can also carry plugin visuals: `roles.visual("hero", OverscrollVisuals.tilt())`.
+Unknown names are a safe no-op. The child DSL works the same way if you prefer
+lambdas per item:
 
 ```kotlin
-class MyEffect(
-    orientation: Orientation,
-    maxOverscroll: Float,
-    animationSpec: AnimationSpec<Float>,
-) : BaseOverscrollEffect(orientation, maxOverscroll, animationSpec) {
-    override val effectModifier: Modifier = Modifier.graphicsLayer {
-        val fade = 1f - (abs(value) / maxOverscroll)
-        alpha = fade.coerceIn(0f, 1f)
-    }
-}
-
-val state = rememberOverScrollState(MyEffect(Orientation.Vertical, 300f, tween(400)))
+Modifier.childOverScrollSupport(state) { translationY = value * 0.3f; alpha = 1f - progress }
 ```
 
-## API notes
+## The demo app
 
-- `rememberOverScrollState(orientation, maxOverscroll, animationSpec)` — state is recreated
-  if parameters change; in-flight overscroll resets.
-- `OverScrollState` exposes `overscrollOffset`, `isOverscrolling`, `scrollValue`,
-  `maxScrollValue`, `scrollTo`, `animateScrollTo` for programmatic control.
-- Overscroll only applies to user-driven drags; programmatic scrolls never squish. A fling
-  that reaches an edge automatically triggers a velocity-proportional squish and settles
-  back.
-- The effect consumes overscroll delta and velocity, so outer scrollables do not react to
-  a child's overscroll.
-- `overScroll` requires bounded constraints along the scrolling axis from its parent (like
-  `verticalScroll`); content that fits does not squish.
-- `containerEffect = false` on `overScroll`/`OverScrollArea` disables the container's own
-  visual so `childOverScrollSupport` children move instead (combining both double-applies
-  the offset).
-- Use one `OverScrollState` per container. Sharing a state between containers makes them
-  fight (shared settle cancellation, last-measured scroll bounds).
+The `app` module is a full showcase — six chambers, live telemetry on every
+screen, Navigation 3 with predictive back, an Aperture-styled dark theme:
+
+`01 Container` · `02 Child mode` · `03 Lazy column` · `04 Plugin playground` ·
+`05 Curves & edges` (live physics tuning) · `06 Tagged roles`
+
+Clone the repo and run it to feel every recipe above.
+
+## Compatibility
+
+- Min SDK 21, Compose Foundation 1.7+
+- Library pinned against `foundation-android:1.7.8`; works with newer Compose at consumption time
+- 94 tests: JVM contract tests (consumption accounting, curves, edges, absorb, settle) + Robolectric gesture integration
 
 ## v1 → v2 migration
 
 - `Modifier.overScroll(isParentOverScrollEnabled, overscrollEffect, orientation, flingBehavior)` →
-  `Modifier.overScroll(state: OverScrollState)`.
-- `Modifier.childOverScrollSupport(overscrollEffect)` → `Modifier.childOverScrollSupport(state)`.
-- `rememberPushDownOverscrollEffect(...)` still exists; prefer `rememberOverScrollState(...)`.
-- The `isParentOverScrollEnabled` flag is gone — use `OverScrollArea` for LazyList or
-  external scroll containers.
+  `Modifier.overScroll(state: OverScrollState)`
+- `Modifier.childOverScrollSupport(overscrollEffect)` → `Modifier.childOverScrollSupport(state)`
+- `rememberPushDownOverscrollEffect(...)` remains; prefer `rememberOverScrollState(...)`
+- `isParentOverScrollEnabled` is replaced by `containerEffect` + `OverScrollArea`
 
-## Contributing, Issues, or Ideas
+## Contributing
 
-If you encounter any issues with Squishy, please file a GitHub issue with as many details as
-possible, including example code or steps to reproduce the issue. For feature requests,
-submit an issue or a pull request.
+Issues and PRs welcome — raise PRs against the default branch, ensure
+`./gradlew squishy:test app:lint` passes, and keep the lint analyzer clean.
 
-## Contribution Guidelines
+## License
 
-- Ensure all tests pass (`./gradlew squishy:test`).
-- Raise a PR to the `develop` branch.
-- Ensure no issues from Android Studio lint analyzer.
+MIT — see [LICENSE](LICENSE).
