@@ -25,6 +25,8 @@ pixel offset that resists as it grows and springs back to zero when you let go.
 Everything else in this library is a lens on that one number — where it renders,
 how it curves, which items it moves.
 
+![What overscroll is](docs/overscroll-concept.svg)
+
 ## Install
 
 ```kotlin
@@ -36,6 +38,10 @@ dependencies { implementation("com.github.iamjosephmj:Squishy:2.1.0") }
 ```
 
 ## The pieces
+
+One number, four lenses:
+
+![The pieces](docs/squishy-pieces.svg)
 
 ### 1. `OverScrollState` — the number, and who owns it
 

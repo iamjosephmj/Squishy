@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="360" viewBox="0 0 940 360">
+  <rect width="940" height="360" fill="#05070D"/>
+  <style>
+    .node { fill:#0B0F1C; stroke:#232A44; stroke-width:2; }
+    .core { fill:#0F1426; stroke:#D8C690; stroke-width:2.5; }
+    .link { stroke:#525A72; stroke-width:2; fill:none; stroke-dasharray:5 5; }
+    .t { fill:#E9EAF0; font:bold 16px ui-monospace,Menlo,monospace; text-anchor:middle; }
+    .s { fill:#B3B9CB; font:13.5px ui-monospace,Menlo,monospace; text-anchor:middle; }
+    .c { fill:#D8C690; font:bold 20px ui-monospace,Menlo,monospace; text-anchor:middle; }
+    .k { fill:#6AD8C2; font:13.5px ui-monospace,Menlo,monospace; text-anchor:middle; }
+  </style>
+
+  <circle cx="470" cy="180" r="88" class="core"/>
+  <text x="470" y="172" class="c">offset</text>
+  <text x="470" y="196" class="s">signed px · springs</text>
+  <text x="470" y="214" class="s">back to 0</text>
+
+  <path d="M400,120 L286,74" class="link"/>
+  <path d="M400,240 L286,286" class="link"/>
+  <path d="M540,120 L654,74" class="link"/>
+  <path d="M540,240 L654,286" class="link"/>
+
+  <rect x="90" y="30" width="196" height="88" class="node" rx="10"/>
+  <text x="188" y="62" class="t">scroll</text>
+  <text x="188" y="84" class="s">Modifier.overScroll</text>
+  <text x="188" y="103" class="k">produces the offset</text>
+
+  <rect x="654" y="30" width="196" height="88" class="node" rx="10"/>
+  <text x="752" y="62" class="t">look</text>
+  <text x="752" y="84" class="s">OverscrollVisual</text>
+  <text x="752" y="103" class="k">draws the offset</text>
+
+  <rect x="90" y="242" width="196" height="88" class="node" rx="10"/>
+  <text x="188" y="274" class="t">feel</text>
+  <text x="188" y="296" class="s">OverScrollConfig</text>
+  <text x="188" y="315" class="k">curves the offset</text>
+
+  <rect x="654" y="242" width="196" height="88" class="node" rx="10"/>
+  <text x="752" y="274" class="t">items</text>
+  <text x="752" y="296" class="s">childSupport · roles</text>
+  <text x="752" y="315" class="k">transform per item</text>
+
+  <text x="470" y="348" class="s">leftover fling velocity arrives here too — and leaves as a bounce</text>
+</svg>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="310" viewBox="0 0 940 310">
+  <rect width="940" height="310" fill="#05070D"/>
+  <style>
+    .box { fill:#0B0F1C; stroke:#232A44; stroke-width:2; rx:10; }
+    .row { fill:#0F1426; }
+    .arrow { stroke:#D8C690; stroke-width:3; fill:none; marker-end:url(#ah); }
+    .spring { stroke:#6AD8C2; stroke-width:2.5; fill:none; }
+    .cap { fill:#B3B9CB; font:15px ui-monospace,Menlo,monospace; }
+    .capb { fill:#E9EAF0; font:bold 16px ui-monospace,Menlo,monospace; }
+    .hi { fill:#6AD8C2; font:15px ui-monospace,Menlo,monospace; }
+    .step { fill:#525A72; font:13px ui-monospace,Menlo,monospace; letter-spacing:2px; }
+  </style>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#D8C690"/>
+    </marker>
+  </defs>
+
+  <text x="30" y="34" class="step">1 · SCROLLING</text>
+  <rect x="30" y="52" width="240" height="180" class="box" rx="10"/>
+  <rect x="46" y="120" width="208" height="14" class="row" rx="3"/>
+  <rect x="46" y="142" width="208" height="14" class="row" rx="3"/>
+  <rect x="46" y="164" width="208" height="14" class="row" rx="3"/>
+  <rect x="46" y="186" width="208" height="14" class="row" rx="3"/>
+  <path d="M150,90 L150,130" class="arrow"/>
+  <text x="30" y="262" class="cap">finger delta —</text>
+  <text x="30" y="282" class="cap">content consumes it</text>
+
+  <text x="350" y="34" class="step">2 · AT THE EDGE</text>
+  <rect x="350" y="52" width="240" height="180" class="box" rx="10"/>
+  <rect x="366" y="66" width="208" height="14" class="row" rx="3"/>
+  <rect x="366" y="88" width="208" height="14" class="row" rx="3"/>
+  <rect x="366" y="110" width="208" height="14" class="row" rx="3"/>
+  <rect x="366" y="132" width="208" height="14" class="row" rx="3"/>
+  <rect x="366" y="154" width="208" height="14" class="row" rx="3"/>
+  <rect x="366" y="176" width="208" height="14" class="row" rx="3"/>
+  <rect x="366" y="198" width="208" height="14" class="row" rx="3"/>
+  <path d="M470,90 L470,200" class="arrow"/>
+  <path d="M366,226 L582,226" stroke="#E8718A" stroke-width="3"/>
+  <text x="350" y="262" class="cap">content full — delta</text>
+  <text x="350" y="282" class="cap">has nowhere to go</text>
+
+  <text x="670" y="34" class="step">3 · OVERSCROLL</text>
+  <rect x="670" y="52" width="240" height="180" fill="none" stroke="#6AD8C2" stroke-width="2" stroke-dasharray="6 5" rx="10"/>
+  <rect x="686" y="92" width="208" height="14" class="row" rx="3"/>
+  <rect x="686" y="114" width="208" height="14" class="row" rx="3"/>
+  <rect x="686" y="136" width="208" height="14" class="row" rx="3"/>
+  <rect x="686" y="158" width="208" height="14" class="row" rx="3"/>
+  <rect x="686" y="180" width="208" height="14" class="row" rx="3"/>
+  <path d="M790,90 L790,150" class="arrow"/>
+  <path d="M700,248 q10,-16 20,0 t20,0 t20,0 t20,0 t20,0 t20,0 t20,0 t20,0 t20,0" class="spring"/>
+  <text x="670" y="262" class="cap">leftover becomes</text>
+  <text x="670" y="282"><tspan class="hi">overscrollOffset</tspan><tspan class="cap"> — springs to 0</tspan></text>
+</svg>
