@@ -42,6 +42,7 @@ fun Modifier.childOverScrollSupport(
     fullyQualifiedName = "io.iamjosephmj.squishy.childOverScrollSupport",
     key1 = key,
 ) {
+    var scope: ChildOverscrollScopeImpl? = null
     this
         .then(
             visual?.visual(
@@ -51,6 +52,12 @@ fun Modifier.childOverScrollSupport(
             ) ?: Modifier
         )
         .graphicsLayer {
-            ChildOverscrollScopeImpl(state, this, index).transform()
+            val cached = scope
+            val impl = if (cached != null && cached.layer === this) {
+                cached
+            } else {
+                ChildOverscrollScopeImpl(state, this, index).also { scope = it }
+            }
+            impl.transform()
         }
 }

@@ -59,17 +59,35 @@ abstract class BaseOverscrollEffect(
     override val isInProgress: Boolean
         get() = value != 0f
 
+    /** Projects a delta onto this effect's axis (y for vertical, x for horizontal). */
     protected fun axisValue(delta: Offset): Float =
         if (orientation == Orientation.Vertical) delta.y else delta.x
 
+    /** Expands an axis value back to a 2D delta on this effect's axis. */
     protected fun axisOffset(axisDelta: Float): Offset =
         if (orientation == Orientation.Vertical) Offset(0f, axisDelta) else Offset(axisDelta, 0f)
 
+    /** Effective positive-side limit: 0 when the leading edge is disabled. */
     internal fun topMax(): Float = if (topEdge.enabled) topEdge.effectiveMax(maxOverscroll) else 0f
 
+    /** Effective negative-side limit: 0 when the trailing edge is disabled. */
     internal fun bottomMax(): Float =
         if (bottomEdge.enabled) bottomEdge.effectiveMax(maxOverscroll) else 0f
 
+    /**
+     * Decorates a scroll with overscroll. Order of operations, per the
+     * `OverscrollEffect` contract:
+     *
+     * 1. Cancel any in-flight settle — a new gesture wins.
+     * 2. Release existing tension toward zero (any source), consuming linearly.
+     * 3. `performScroll` with the remainder — called exactly once.
+     * 4. Apply the leftover (drag sources above a 0.5 px noise floor, only)
+     *    through the configured curve, clamped per edge, and count what was
+     *    absorbed as consumed.
+     *
+     * Returns the total consumption — release + scroll + absorbed — so nothing
+     * the effect handled leaks to ancestor scrollables.
+     */
     override fun applyToScroll(
         delta: Offset,
         source: NestedScrollSource,
@@ -112,6 +130,13 @@ abstract class BaseOverscrollEffect(
         return axisOffset(release + consumedByScroll + absorbed) + offAxisConsumed
     }
 
+    /**
+     * Decorates a fling: runs [performFling] exactly once, then converts the
+     * leftover velocity into a bounce peak (`offset + velocity * factor`,
+     * edge-gated and clamped) and — crucially — *awaits* the full absorb plus
+     * settle inside this call. Callers (scrollable, connections) treat return
+     * as the gesture's true end; a new drag cancels via the tracked job.
+     */
     override suspend fun applyToFling(
         velocity: Velocity,
         performFling: suspend (Velocity) -> Velocity

@@ -1,5 +1,9 @@
 package io.iamjosephmj.squishy.navigation
 
+/**
+ * One entry per demo chamber; feeds the home cards, chamber scaffolds and
+ * intros from one place.
+ */
 enum class DemoScreen(val num: String, val title: String, val blurb: String, val detail: String) {
     Container("01", "Container", "Path 1 basics — a plain column that squishes past its edges, container visual on.", "A plain column that scrolls and then squishes past its edges — the container itself carries the overscroll visual. Watch the telemetry while dragging past the top or bottom, and fling into an edge to see the velocity bounce settle back."),
     ChildMode("02", "Child mode", "containerEffect off — every item carries the overscroll instead of the box.", "The container stays completely still — every item carries the overscroll instead. All rows share one state, so the whole list responds to the same pull while the box never moves."),

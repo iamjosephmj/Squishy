@@ -36,9 +36,14 @@ interface ChildOverscrollScope : GraphicsLayerScope {
     val index: Int
 }
 
+/**
+ * [ChildOverscrollScope] bound to one item: delegates every layer property to
+ * the live [GraphicsLayerScope] it is created inside, and derives the scope
+ * reads from the shared [OverScrollState] on demand.
+ */
 internal class ChildOverscrollScopeImpl(
     private val state: OverScrollState,
-    layer: GraphicsLayerScope,
+    internal val layer: GraphicsLayerScope,
     override val index: Int = 0,
 ) : ChildOverscrollScope, GraphicsLayerScope by layer {
 

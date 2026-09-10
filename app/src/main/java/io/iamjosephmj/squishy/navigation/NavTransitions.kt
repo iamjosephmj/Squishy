@@ -12,10 +12,12 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 
+/** Material emphasized easing, the curve all chamber transitions run on. */
 val EmphasizedEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
 private const val EnterDuration = 420
 private const val ExitDuration = 240
 
+/** Forward enter: slide from [offsetFraction] of width + fade + scale-up. */
 fun axisEnterTransition(offsetFraction: Float): EnterTransition =
     slideInHorizontally(
         animationSpec = tween(EnterDuration, easing = EmphasizedEasing),
@@ -27,6 +29,7 @@ fun axisEnterTransition(offsetFraction: Float): EnterTransition =
         initialScale = 0.94f,
     )
 
+/** Exit: slide to [offsetFraction] of width + fade + scale-down; shorter than enter. */
 fun axisExitTransition(offsetFraction: Float): ExitTransition =
     slideOutHorizontally(
         animationSpec = tween(ExitDuration, easing = EmphasizedEasing),

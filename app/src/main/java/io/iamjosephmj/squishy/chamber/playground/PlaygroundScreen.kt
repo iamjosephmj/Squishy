@@ -28,6 +28,7 @@ import io.iamjosephmj.squishy.visual.OverscrollVisual
 import io.iamjosephmj.squishy.visual.OverscrollVisuals
 import io.iamjosephmj.squishy.visual.plus
 
+/** Chamber 04 — swap plugin visuals per child, live from the chip row. */
 @Composable
 fun PlaygroundScreen(onBack: () -> Unit, viewModel: PlaygroundViewModel = viewModel()) {
     val visuals: List<Pair<String, OverscrollVisual>> = listOf(

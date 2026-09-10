@@ -8,6 +8,7 @@ import io.iamjosephmj.squishy.chamber.lazylist.LazyListScreen
 import io.iamjosephmj.squishy.chamber.playground.PlaygroundScreen
 import io.iamjosephmj.squishy.chamber.roles.RolesScreen
 
+/** Maps a chamber destination to its screen; the Nav3 entry calls this. */
 @Composable
 fun ChamberContent(screen: DemoScreen, onBack: () -> Unit) {
     when (screen) {

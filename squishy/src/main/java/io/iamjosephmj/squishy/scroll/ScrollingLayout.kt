@@ -8,6 +8,12 @@ import androidx.compose.runtime.snapshots.Snapshot
 import io.iamjosephmj.squishy.state.OverScrollState
 import kotlin.math.roundToInt
 
+/**
+ * The measured-layout half of [Modifier.overScroll]: measures the content with
+ * an unbounded main axis, publishes the scroll range to the state's engine,
+ * and places the content at `-position`. Runs after measurement only —
+ * scrolling invalidates placement, never measurement.
+ */
 internal fun Modifier.scrollingLayout(state: OverScrollState): Modifier =
     layout { measurable, constraints ->
         val vertical = state.orientation == Orientation.Vertical

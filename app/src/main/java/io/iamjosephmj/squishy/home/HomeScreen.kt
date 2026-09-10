@@ -45,6 +45,10 @@ import io.iamjosephmj.squishy.ui.theme.TextSoft
 
 private val WordmarkStroke = Stroke(width = 1.4f)
 
+/**
+ * The hub: wordmark, hero and the chamber cards, on a rubber band with
+ * tagged roles — header lags at 0.10x, cards fan out 0.22x + 0.012 per index.
+ */
 @Composable
 fun HomeScreen(onOpen: (DemoScreen) -> Unit) {
     val state = rememberOverScrollState(

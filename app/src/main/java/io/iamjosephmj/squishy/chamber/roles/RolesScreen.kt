@@ -28,6 +28,7 @@ import io.iamjosephmj.squishy.ui.theme.TextBright
 import io.iamjosephmj.squishy.ui.theme.TextMuted
 import io.iamjosephmj.squishy.ui.theme.TextMuted2
 
+/** Chamber 06 — tagged roles at three depths with per-index stagger. */
 @Composable
 fun RolesScreen(onBack: () -> Unit) {
     val state = rememberOverScrollState(

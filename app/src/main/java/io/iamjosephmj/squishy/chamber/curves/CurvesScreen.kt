@@ -40,6 +40,7 @@ import io.iamjosephmj.squishy.ui.SectionLabel
 import io.iamjosephmj.squishy.ui.TelemetryRow
 import io.iamjosephmj.squishy.ui.theme.TextBright
 
+/** Chamber 05 — tune physics in the edit card; APPLY collapses to a summary. */
 @Composable
 fun CurvesScreen(onBack: () -> Unit, viewModel: CurvesViewModel = viewModel()) {
     val state = rememberOverScrollState(config = viewModel.config)

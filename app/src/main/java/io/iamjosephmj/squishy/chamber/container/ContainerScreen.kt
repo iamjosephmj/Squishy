@@ -16,6 +16,7 @@ import io.iamjosephmj.squishy.ui.DemoRow
 import io.iamjosephmj.squishy.ui.ScreenScaffold
 import io.iamjosephmj.squishy.ui.TelemetryRow
 
+/** Chamber 01 — the container carries the whole overscroll visual. */
 @Composable
 fun ContainerScreen(onBack: () -> Unit) {
     val state = rememberOverScrollState()

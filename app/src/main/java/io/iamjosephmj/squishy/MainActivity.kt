@@ -33,6 +33,10 @@ private data object HomeKey : NavKey
 @Serializable
 private data class ChamberKey(val screen: DemoScreen) : NavKey
 
+/**
+ * The single activity: hosts the Navigation 3 back stack with shared-axis
+ * transitions and the predictive-back spec.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

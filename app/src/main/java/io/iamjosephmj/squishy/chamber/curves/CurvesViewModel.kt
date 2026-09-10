@@ -10,6 +10,10 @@ import io.iamjosephmj.squishy.physics.EdgeConfig
 import io.iamjosephmj.squishy.physics.OverScrollConfig
 import io.iamjosephmj.squishy.physics.OverscrollCurve
 
+/**
+ * Owns the curves lab: curve selection, edge toggles, the max slider and
+ * the editing/collapsed flag; derives [config] and the summary line from them.
+ */
 class CurvesViewModel : ViewModel() {
     var curveIndex by mutableIntStateOf(0)
         private set

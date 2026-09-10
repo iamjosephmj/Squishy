@@ -17,6 +17,7 @@ import io.iamjosephmj.squishy.ui.DemoRow
 import io.iamjosephmj.squishy.ui.ScreenScaffold
 import io.iamjosephmj.squishy.ui.TelemetryRow
 
+/** Chamber 02 — box frozen, every row carries the overscroll. */
 @Composable
 fun ChildModeScreen(onBack: () -> Unit) {
     val state = rememberOverScrollState()

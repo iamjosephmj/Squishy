@@ -82,8 +82,19 @@ object OverscrollVisuals {
      *
      * @param maxDegrees shear angle at a full-pull
      */
+    /**
+     * Shears the content in the draw phase; direction follows the pull.
+     * The matrix is allocated once and mutated per frame.
+     *
+     * @param maxDegrees shear angle at a full-pull
+     */
     @Composable
     fun skew(maxDegrees: Float = 8f): OverscrollVisual = remember(maxDegrees) {
+        val matrix = Matrix()
+        matrix.values[Matrix.ScaleX] = 1f
+        matrix.values[Matrix.ScaleY] = 1f
+        matrix.values[Matrix.ScaleZ] = 1f
+        matrix.values[Matrix.Perspective2] = 1f
         OverscrollVisual { value, bounds, _ ->
             Modifier.drawWithContent {
                 val v = value()
@@ -92,14 +103,8 @@ object OverscrollVisuals {
                     drawContent()
                 } else {
                     val kx = tan(maxDegrees * progress * sign(v) * PI.toFloat() / 180f)
-                    val matrixValues = FloatArray(16)
-                    matrixValues[Matrix.ScaleX] = 1f
-                    matrixValues[Matrix.ScaleY] = 1f
-                    matrixValues[Matrix.ScaleZ] = 1f
-                    matrixValues[Matrix.Perspective2] = 1f
-                    matrixValues[Matrix.SkewX] = kx
-                    matrixValues[Matrix.TranslateX] = -kx * size.height / 2f
-                    val matrix = Matrix(matrixValues)
+                    matrix.values[Matrix.SkewX] = kx
+                    matrix.values[Matrix.TranslateX] = -kx * size.height / 2f
                     drawContext.canvas.save()
                     drawContext.canvas.concat(matrix)
                     try {
@@ -137,18 +142,33 @@ object OverscrollVisuals {
      * @param maxRadiusPx blur radius at a full-pull
      * @param minAlpha opacity floor at a full-pull; keep at 1f to disable fading
      */
+    /**
+     * Depth-of-field at the edge: focus falls off as the pull deepens.
+     * The real blur needs API 31+; below it only [minAlpha] applies.
+     * The effect is allocated only when the integer-pixel radius changes,
+     * not per frame.
+     *
+     * @param maxRadiusPx blur radius at a full-pull
+     * @param minAlpha opacity floor at a full-pull; keep at 1f to disable fading
+     */
     @Composable
     fun blur(
         maxRadiusPx: Float = 24f,
         minAlpha: Float = 1f,
     ): OverscrollVisual = remember(maxRadiusPx, minAlpha) {
+        var lastRadius = -1f
+        var effect: BlurEffect? = null
         OverscrollVisual { value, bounds, _ ->
             Modifier.graphicsLayer {
                 val progress = progressOf(value(), bounds)
                 alpha = 1f - (1f - minAlpha) * progress
                 if (Build.VERSION.SDK_INT >= 31 && progress > 0f) {
-                    val radius = maxRadiusPx * progress
-                    renderEffect = BlurEffect(radius, radius)
+                    val radius = (maxRadiusPx * progress).toInt().toFloat()
+                    if (radius != lastRadius) {
+                        lastRadius = radius
+                        effect = BlurEffect(radius, radius)
+                    }
+                    renderEffect = effect
                 } else {
                     renderEffect = null
                 }

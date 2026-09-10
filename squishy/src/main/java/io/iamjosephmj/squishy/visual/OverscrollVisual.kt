@@ -34,9 +34,11 @@ fun interface OverscrollVisual {
 operator fun OverscrollVisual.plus(other: OverscrollVisual): OverscrollVisual =
     CombinedOverscrollVisual(this, other)
 
+/** Pull depth helper: `abs(value) / bounds` clamped to 0..1, guarded for `bounds <= 0`. */
 internal fun progressOf(value: Float, bounds: Float): Float =
     if (bounds <= 0f) 0f else (abs(value) / bounds).coerceIn(0f, 1f)
 
+/** The [OverscrollVisual] returned by `+`; equality over its parts so stacked visuals key stably. */
 private class CombinedOverscrollVisual(
     private val first: OverscrollVisual,
     private val second: OverscrollVisual,

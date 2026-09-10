@@ -18,6 +18,7 @@ import io.iamjosephmj.squishy.ui.theme.TextBright
 import io.iamjosephmj.squishy.ui.theme.TextMuted2
 import kotlin.math.abs
 
+/** Live readout of the shared state: offset px, progress, scroll, ACTIVE/IDLE. */
 @Composable
 fun TelemetryRow(state: OverScrollState, modifier: Modifier = Modifier) {
     val offset = state.overscrollOffset

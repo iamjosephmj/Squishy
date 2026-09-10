@@ -14,6 +14,11 @@ import io.iamjosephmj.squishy.visual.OverscrollVisual
 import io.iamjosephmj.squishy.visual.OverscrollVisuals
 import io.iamjosephmj.squishy.visual.PushDownOverscrollEffect
 
+/**
+ * The bridge from the plugin surface: one engine instance configured from an
+ * [OverScrollConfig] whose visual rendering is the paired
+ * [io.iamjosephmj.squishy.visual.OverscrollVisual].
+ */
 @OptIn(ExperimentalFoundationApi::class)
 internal class ConfiguredOverscrollEffect(
     orientation: Orientation,

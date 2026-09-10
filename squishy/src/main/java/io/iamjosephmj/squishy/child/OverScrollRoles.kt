@@ -63,6 +63,7 @@ fun Modifier.overscrollRole(
 ) {
     val transform = roles.transforms[name]
     val visual = roles.visuals[name]
+    var scope: ChildOverscrollScopeImpl? = null
     this
         .then(
             visual?.visual(
@@ -74,7 +75,13 @@ fun Modifier.overscrollRole(
         .then(
             if (transform != null) {
                 Modifier.graphicsLayer {
-                    ChildOverscrollScopeImpl(state, this, index).transform()
+                    val cached = scope
+                    val impl = if (cached != null && cached.layer === this) {
+                        cached
+                    } else {
+                        ChildOverscrollScopeImpl(state, this, index).also { scope = it }
+                    }
+                    impl.transform()
                 }
             } else {
                 Modifier

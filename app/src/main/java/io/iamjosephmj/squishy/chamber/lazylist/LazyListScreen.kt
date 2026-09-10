@@ -20,6 +20,7 @@ import io.iamjosephmj.squishy.ui.DemoRow
 import io.iamjosephmj.squishy.ui.ScreenScaffold
 import io.iamjosephmj.squishy.ui.TelemetryRow
 
+/** Chamber 03 — a real LazyColumn inside OverScrollArea. */
 @Composable
 fun LazyListScreen(onBack: () -> Unit) {
     val state = rememberOverScrollState(
