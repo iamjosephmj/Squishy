@@ -2,11 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "io.iamjosephmj.squishysample"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.iamjosephmj.squishysample"
@@ -44,7 +45,9 @@ android {
 }
 
 dependencies {
-    implementation(libs.squishy)
+    implementation(project(":squishy"))
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.material3)

@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "io.iamjosephmj.squishy"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21
@@ -33,11 +33,22 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
     implementation(libs.androidx.foundation.android)
     implementation(libs.androidx.appcompat)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui.test.junit4)
 }
 
 afterEvaluate {
@@ -48,14 +59,14 @@ afterEvaluate {
 
                 groupId = "io.iamjosephmj.squishy"
                 artifactId = "release"
-                version = "1.2.0"
+                version = "2.1.0"
             }
 
             create("debug", MavenPublication::class) {
                 from(components["debug"])
                 groupId = "io.iamjosephmj.squishy"
                 artifactId = "release"
-                version = "1.2.0"
+                version = "2.1.0"
             }
         }
     }

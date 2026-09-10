@@ -1,12 +1,15 @@
 [versions]
-agp = "8.8.1"
-kotlin = "2.1.10"
+agp = "8.12.3"
+kotlin = "2.2.20"
 coreKtx = "1.13.1"
-activityCompose = "1.9.3"
-composeBom = "2025.03.01"
+activityCompose = "1.12.0"
+composeBom = "2025.10.01"
 appcompat = "1.7.0"
 foundationAndroid = "1.7.8"
-squishy = "1.0.3"
+junit = "4.13.2"
+coroutinesTest = "1.10.1"
+robolectric = "4.14.1"
+navigation3 = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -15,11 +18,18 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
-squishy = { module = "com.github.iamjosephmj:Squishy", version.ref = "squishy" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+
+androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
+androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
