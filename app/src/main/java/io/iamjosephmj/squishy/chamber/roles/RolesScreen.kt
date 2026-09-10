@@ -49,7 +49,7 @@ fun RolesScreen(onBack: () -> Unit) {
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
-                    .overScroll(state, containerEffect = false, flingBehavior = FlingPresets.ultraSmooth()),
+                    .overScroll(state, containerEffect = false, flingBehavior = FlingPresets.iOSStyle()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Column(

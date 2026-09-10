@@ -69,7 +69,7 @@ fun PlaygroundScreen(onBack: () -> Unit, viewModel: PlaygroundViewModel = viewMo
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
-                    .overScroll(state, containerEffect = false, flingBehavior = FlingPresets.ultraSmooth()),
+                    .overScroll(state, containerEffect = false, flingBehavior = FlingPresets.iOSStyle()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 repeat(14) { index ->

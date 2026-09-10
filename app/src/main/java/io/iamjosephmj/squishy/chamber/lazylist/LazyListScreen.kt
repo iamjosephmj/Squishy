@@ -35,7 +35,7 @@ fun LazyListScreen(onBack: () -> Unit) {
                     Modifier
                         .fillMaxSize()
                         .padding(horizontal = 20.dp),
-                    flingBehavior = FlingPresets.ultraSmooth(),
+                    flingBehavior = FlingPresets.iOSStyle(),
                     contentPadding = PaddingValues(vertical = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {

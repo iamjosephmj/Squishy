@@ -28,7 +28,7 @@ fun ContainerScreen(onBack: () -> Unit) {
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
-                    .overScroll(state, flingBehavior = FlingPresets.ultraSmooth()),
+                    .overScroll(state, flingBehavior = FlingPresets.iOSStyle()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 repeat(18) { index ->

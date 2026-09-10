@@ -139,7 +139,7 @@ inside `OverScrollArea` take a standard `FlingBehavior`, so
 Column(
     Modifier.overScroll(
         state,
-        flingBehavior = FlingPresets.ultraSmooth(),
+        flingBehavior = FlingPresets.iOSStyle(),
     )
 ) { /* rows */ }
 ```

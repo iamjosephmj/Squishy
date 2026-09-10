@@ -138,7 +138,7 @@ fun CurvesScreen(onBack: () -> Unit, viewModel: CurvesViewModel = viewModel()) {
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp, vertical = 10.dp)
-                    .overScroll(state, flingBehavior = FlingPresets.ultraSmooth()),
+                    .overScroll(state, flingBehavior = FlingPresets.iOSStyle()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 repeat(14) { index ->

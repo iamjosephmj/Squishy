@@ -60,7 +60,7 @@ fun HomeScreen(onOpen: (DemoScreen) -> Unit) {
         CosmicBackground(Modifier.fillMaxSize())
         OverScrollArea(state, Modifier.fillMaxSize(), containerEffect = false) {
             LazyColumn(
-                flingBehavior = FlingPresets.ultraSmooth(),
+                flingBehavior = FlingPresets.iOSStyle(),
                 contentPadding = PaddingValues(
                     start = 20.dp,
                     end = 20.dp,
