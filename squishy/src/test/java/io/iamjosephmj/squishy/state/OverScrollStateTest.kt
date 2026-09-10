@@ -1,10 +1,8 @@
-package io.iamjosephmj.squishy
+package io.iamjosephmj.squishy.state
 
-import io.iamjosephmj.squishy.child.*
-import io.iamjosephmj.squishy.physics.*
-import io.iamjosephmj.squishy.scroll.*
-import io.iamjosephmj.squishy.state.*
-import io.iamjosephmj.squishy.visual.*
+import io.iamjosephmj.squishy.scroll.SquishyScrollState
+import io.iamjosephmj.squishy.visual.PushDownOverscrollEffect
+
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi

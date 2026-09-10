@@ -1,10 +1,5 @@
-package io.iamjosephmj.squishy
+package io.iamjosephmj.squishy.visual
 
-import io.iamjosephmj.squishy.child.*
-import io.iamjosephmj.squishy.physics.*
-import io.iamjosephmj.squishy.scroll.*
-import io.iamjosephmj.squishy.state.*
-import io.iamjosephmj.squishy.visual.*
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.ui.Modifier
