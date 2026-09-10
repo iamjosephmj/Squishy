@@ -42,7 +42,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.foundation.android)
-    implementation(libs.androidx.appcompat)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
