@@ -7,12 +7,14 @@ import io.iamjosephmj.squishy.state.*
 import io.iamjosephmj.squishy.visual.*
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -253,6 +255,35 @@ class PluginIntegrationTest {
     }
 
     @Test
+    fun childVisual_swapReachesSkippableChildWhenVisualChanges() {
+        lateinit var state: OverScrollState
+        var selected by mutableStateOf(0)
+        val first = RecordingVisual(0)
+        val second = RecordingVisual(1)
+        composeRule.setContent {
+            state = rememberOverScrollState(config = OverScrollConfig(maxOverscroll = 500f))
+            SkippableRow(
+                Modifier.childOverScrollSupport(
+                    state,
+                    visual = if (selected == 0) first else second,
+                ),
+            )
+        }
+        composeRule.waitForIdle()
+        composeRule.runOnIdle {
+            assertTrue("initial visual must be applied", first.appliedIds.contains(0))
+            selected = 1
+        }
+        composeRule.waitForIdle()
+        composeRule.runOnIdle {
+            assertTrue(
+                "swapped visual must be re-applied to the skipped child",
+                second.appliedIds.contains(1),
+            )
+        }
+    }
+
+    @Test
     fun overscrollRoles_routeTaggedAnimationsPerName() {
         lateinit var state: OverScrollState
         val headerSeen = mutableListOf<Pair<Float, Float>>()
@@ -364,4 +395,20 @@ class PluginIntegrationTest {
             )
         }
     }
+}
+
+/** Records every time the modifier factory materializes, to detect skipped recompositions. */
+private class RecordingVisual(private val id: Int) : OverscrollVisual {
+    val appliedIds = mutableListOf<Int>()
+
+    override fun visual(value: () -> Float, bounds: Float, orientation: Orientation): Modifier {
+        appliedIds.add(id)
+        return Modifier
+    }
+}
+
+/** Mirrors the demo rows: a skippable composable whose only changing input hides inside `modifier`. */
+@Composable
+private fun SkippableRow(modifier: Modifier = Modifier) {
+    BasicText("skippable row", modifier.fillMaxWidth().height(100.dp))
 }

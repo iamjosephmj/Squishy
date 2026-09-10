@@ -26,7 +26,9 @@ fun Modifier.childOverScrollSupport(
  * add a [transform] only for effects the visual doesn't already provide.
  *
  * @param visual plugin visual applied to this item (e.g. `OverscrollVisuals.tilt()`)
- * @param key invalidates the modifier when the item's identity changes
+ * @param key invalidates the modifier when the item's identity changes;
+ *   the [visual], [index] and [transform] are tracked automatically, so
+ *   swapping them re-applies the modifier even across skippable callers
  * @param index the item's position, exposed to [transform] as
  *   [ChildOverscrollScope.index] — one registered transform can stagger
  * @param transform layer writes in the [ChildOverscrollScope]
@@ -40,7 +42,7 @@ fun Modifier.childOverScrollSupport(
     transform: ChildOverscrollScope.() -> Unit = {},
 ): Modifier = composed(
     fullyQualifiedName = "io.iamjosephmj.squishy.childOverScrollSupport",
-    key1 = key,
+    key, visual, index, transform,
 ) {
     var scope: ChildOverscrollScopeImpl? = null
     this
