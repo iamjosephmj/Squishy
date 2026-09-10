@@ -11,6 +11,12 @@ import androidx.compose.ui.unit.IntOffset
 import io.iamjosephmj.squishy.physics.BaseOverscrollEffect
 import kotlin.math.roundToInt
 
+/**
+ * The classic effect: content follows the finger — the offset becomes a layout
+ * translation along the scroll axis, revealing what is behind the edge.
+ *
+ * Prefer [rememberOverScrollState]; extend this only to customize the motion.
+ */
 class PushDownOverscrollEffect(
     orientation: Orientation,
     maxOverscroll: Float,
@@ -26,6 +32,7 @@ class PushDownOverscrollEffect(
     }
 }
 
+/** Creates a remembered [PushDownOverscrollEffect]; see that class. */
 @Composable
 fun rememberPushDownOverscrollEffect(
     orientation: Orientation = Orientation.Vertical,

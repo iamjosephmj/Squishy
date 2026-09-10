@@ -12,6 +12,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.Velocity
 import io.iamjosephmj.squishy.state.OverScrollState
 
+/**
+ * The decorator half of [OverScrollArea], exposed for custom layouts: adds a
+ * nested-scroll connection that feeds this node's children's edge leftovers
+ * into [state] and renders the container visual. Does not add scrolling of its
+ * own — pair it with any scrollable child.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 fun Modifier.overScrollConnection(
     state: OverScrollState,

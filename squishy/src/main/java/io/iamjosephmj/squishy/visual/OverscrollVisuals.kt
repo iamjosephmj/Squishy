@@ -18,8 +18,17 @@ import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.math.tan
 
+/**
+ * The built-in visual library. All factories are remembered composables —
+ * call them inline, combine with `+`, and hand the result to
+ * `rememberOverScrollState(visual = ...)`.
+ */
 object OverscrollVisuals {
 
+    /**
+     * Content follows the finger: the offset becomes a translation along the
+     * scroll axis.
+     */
     @Composable
     fun pushDown(): OverscrollVisual = remember {
         OverscrollVisual { value, _, orientation ->
@@ -33,6 +42,12 @@ object OverscrollVisuals {
         }
     }
 
+    /**
+     * The container shrinks toward the pull, like compressing a sponge.
+     *
+     * @param minScaleX horizontal scale at a full-pull
+     * @param minScaleY vertical scale at a full-pull
+     */
     @Composable
     fun zoom(
         minScaleX: Float = 0.85f,
@@ -47,6 +62,11 @@ object OverscrollVisuals {
         }
     }
 
+    /**
+     * Rotates around the screen axis; direction follows the edge being pulled.
+     *
+     * @param maxDegrees rotation at a full-pull
+     */
     @Composable
     fun rotate(maxDegrees: Float = 8f): OverscrollVisual = remember(maxDegrees) {
         OverscrollVisual { value, bounds, _ ->
@@ -57,6 +77,11 @@ object OverscrollVisuals {
         }
     }
 
+    /**
+     * Shears the content in the draw phase; direction follows the pull.
+     *
+     * @param maxDegrees shear angle at a full-pull
+     */
     @Composable
     fun skew(maxDegrees: Float = 8f): OverscrollVisual = remember(maxDegrees) {
         OverscrollVisual { value, bounds, _ ->
@@ -87,6 +112,12 @@ object OverscrollVisuals {
         }
     }
 
+    /**
+     * Leans the content in 3D around the horizontal axis, pivoting at the
+     * pulled edge — a card tipping toward you.
+     *
+     * @param maxDegrees tilt at a full-pull
+     */
     @Composable
     fun tilt(maxDegrees: Float = 12f): OverscrollVisual = remember(maxDegrees) {
         OverscrollVisual { value, bounds, _ ->
@@ -99,6 +130,13 @@ object OverscrollVisuals {
         }
     }
 
+    /**
+     * Depth-of-field at the edge: focus falls off as the pull deepens.
+     * The real blur needs API 31+; below it only [minAlpha] applies.
+     *
+     * @param maxRadiusPx blur radius at a full-pull
+     * @param minAlpha opacity floor at a full-pull; keep at 1f to disable fading
+     */
     @Composable
     fun blur(
         maxRadiusPx: Float = 24f,
@@ -118,6 +156,11 @@ object OverscrollVisuals {
         }
     }
 
+    /**
+     * The edge dissolves into the background.
+     *
+     * @param minAlpha opacity floor at a full-pull
+     */
     @Composable
     fun fade(minAlpha: Float = 0.5f): OverscrollVisual = remember(minAlpha) {
         OverscrollVisual { value, bounds, _ ->

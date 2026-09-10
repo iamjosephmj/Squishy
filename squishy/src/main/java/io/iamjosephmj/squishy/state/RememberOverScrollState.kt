@@ -34,6 +34,14 @@ internal class ConfiguredOverscrollEffect(
         visual.visual({ value }, maxOverscroll, orientation)
 }
 
+/**
+ * Creates a push-down state with flat parameters — the shortest path to a
+ * working container. For curves, edges or visuals use the [OverScrollConfig]
+ * or visual overloads.
+ *
+ * The state is keyed on all parameters: changing any of them mid-gesture
+ * creates a fresh state and resets the offset.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun rememberOverScrollState(
@@ -47,6 +55,11 @@ fun rememberOverScrollState(
     return remember(effect) { OverScrollState(effect, SquishyScrollState()) }
 }
 
+/**
+ * Wraps a fully custom [effect] — the escape hatch for effects that keep
+ * state beyond the offset. The effect instance is remembered by identity:
+ * hoist or remember it yourself.
+ */
 @Composable
 fun rememberOverScrollState(
     effect: BaseOverscrollEffect,
@@ -54,12 +67,28 @@ fun rememberOverScrollState(
     OverScrollState(effect, SquishyScrollState())
 }
 
+/**
+ * Creates a state from [config] alone, using the classic push-down visual.
+ *
+ * @see rememberOverScrollState(OverscrollVisual, OverScrollConfig)
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun rememberOverScrollState(
     config: OverScrollConfig,
 ): OverScrollState = rememberOverScrollState(OverscrollVisuals.pushDown(), config)
 
+/**
+ * The plugin entry point: pairs any [visual] with a [config].
+ *
+ * The state is keyed on both arguments. Built-in visual factories are
+ * remembered composables, so inline use is safe; custom lambdas are compared
+ * by identity — hoist them if you create them in composition.
+ *
+ * @param visual what the offset looks like; rendered on the container unless
+ *   `containerEffect = false`
+ * @param config how the offset behaves
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun rememberOverScrollState(

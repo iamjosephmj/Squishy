@@ -7,10 +7,30 @@ import androidx.compose.ui.graphics.graphicsLayer
 import io.iamjosephmj.squishy.state.OverScrollState
 import io.iamjosephmj.squishy.visual.OverscrollVisual
 
+/**
+ * The item inherits the container's visual — whatever the state's effect
+ * renders (push-down offset, zoom, ...), applied to this item's layer.
+ * Pair with `overScroll(state, containerEffect = false)` so the box holds
+ * still while the items carry the effect.
+ */
 fun Modifier.childOverScrollSupport(
     state: OverScrollState,
 ): Modifier = this.then(state.effect.effectModifier)
 
+/**
+ * Per-item overscroll: an optional plugin [visual] plus an inline [transform],
+ * both driven by the container's [state].
+ *
+ * Runs inside the item's graphics layer — reads of `value`/`progress` are
+ * frame-synced and never recompose. Let the visual drive the item's response;
+ * add a [transform] only for effects the visual doesn't already provide.
+ *
+ * @param visual plugin visual applied to this item (e.g. `OverscrollVisuals.tilt()`)
+ * @param key invalidates the modifier when the item's identity changes
+ * @param index the item's position, exposed to [transform] as
+ *   [ChildOverscrollScope.index] — one registered transform can stagger
+ * @param transform layer writes in the [ChildOverscrollScope]
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.childOverScrollSupport(
     state: OverScrollState,

@@ -9,23 +9,48 @@ import androidx.compose.runtime.remember
 import io.iamjosephmj.squishy.state.OverScrollState
 import io.iamjosephmj.squishy.visual.OverscrollVisual
 
+/**
+ * A named registry of per-item animations — the `setTag()` pattern. Register
+ * behaviors once per screen, then tag items with [Modifier.overscrollRole].
+ * Items sharing a name share the animation; each still receives its own
+ * [ChildOverscrollScope] with its own [ChildOverscrollScope.index].
+ */
 class OverScrollRoles {
     internal val transforms = mutableMapOf<String, ChildOverscrollScope.() -> Unit>()
     internal val visuals = mutableMapOf<String, OverscrollVisual>()
 
+    /**
+     * Registers a layer transform under [name], replacing any previous one.
+     *
+     * @param block runs inside each tagged item's graphics layer
+     */
     fun transform(name: String, block: ChildOverscrollScope.() -> Unit) {
         transforms[name] = block
     }
 
+    /** Registers a plugin [visual] under [name] for items tagged with it. */
     fun visual(name: String, visual: OverscrollVisual) {
         visuals[name] = visual
     }
 }
 
+/**
+ * Remembers an [OverScrollRoles] registry built by [builder]. The builder runs
+ * once; registering later updates are fine (the lookup happens per item).
+ */
 @Composable
 fun rememberOverScrollRoles(builder: OverScrollRoles.() -> Unit): OverScrollRoles =
     remember { OverScrollRoles().apply(builder) }
 
+/**
+ * Tags this item with a role [name] — the item runs whatever `transform` and
+ * `visual` the registry holds under that name, driven by [state]. Unknown
+ * names render nothing, so dynamic lists can't crash on stale tags.
+ *
+ * @param roles the screen's registry; see [rememberOverScrollRoles]
+ * @param name the role to look up
+ * @param index the item's position, surfaced to the transform for stagger
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.overscrollRole(
     state: OverScrollState,

@@ -15,6 +15,25 @@ import kotlinx.coroutines.Job
 import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 
+/**
+ * The overscroll engine. Owns every nested-scroll contract — consumption
+ * accounting, tension release, drag gating, fling absorption, and the awaited
+ * settle — and exposes the current offset as [value].
+ *
+ * Subclassing is the full-custom escape hatch; most effects only need an
+ * [io.iamjosephmj.squishy.visual.OverscrollVisual] passed to
+ * `rememberOverScrollState(visual, config)`. Extend this directly when you need
+ * state beyond the offset (custom drawing loops, gesture side effects).
+ *
+ * The offset is backed by snapshot state: reads from `graphicsLayer`/`offset`
+ * lambdas are frame-synced and never recompose. [applyToScroll] is fully
+ * synchronous — no coroutine dispatch between input and [value] changing.
+ *
+ * @param orientation the axis this effect works on.
+ * @param maxOverscroll default offset limit in px before per-edge overrides.
+ * @param animationSpec the settle animation back to zero (see
+ *   [OverScrollConfig.settleSpec]).
+ */
 @OptIn(ExperimentalFoundationApi::class)
 abstract class BaseOverscrollEffect(
     val orientation: Orientation,
@@ -32,9 +51,11 @@ abstract class BaseOverscrollEffect(
     private val settleAnimatable = Animatable(0f)
     private var settleJob: Job? = null
 
+    /** The current overscroll offset in px — positive at the leading edge. */
     val value: Float
         get() = offsetState.floatValue
 
+    /** True while an offset is held or settling back to zero. */
     override val isInProgress: Boolean
         get() = value != 0f
 

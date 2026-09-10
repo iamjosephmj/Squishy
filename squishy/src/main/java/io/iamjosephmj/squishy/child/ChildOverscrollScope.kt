@@ -4,16 +4,35 @@ import androidx.compose.ui.graphics.GraphicsLayerScope
 import io.iamjosephmj.squishy.state.OverScrollState
 import kotlin.math.abs
 
+/** Which edge the current pull is engaged with. */
 enum class OverscrollDirection {
+    /** The leading edge — top for vertical, start for horizontal. */
     Top,
+    /** The trailing edge — bottom for vertical, end for horizontal. */
     Bottom,
+    /** No overscroll held. */
     None,
 }
 
+/**
+ * The scope a per-item transform runs in. Extends [GraphicsLayerScope], so
+ * `translationY`, `scaleX`, `alpha` and friends apply directly to the item's
+ * layer — writes are frame-synced, no recomposition.
+ *
+ * All reads reflect the shared [io.iamjosephmj.squishy.state.OverScrollState]
+ * of the container the item belongs to.
+ */
 interface ChildOverscrollScope : GraphicsLayerScope {
+    /** Current overscroll in px, signed — positive at the leading edge. */
     val value: Float
+
+    /** `abs(value) / maxOverscroll` clamped to 0..1 — pull depth. */
     val progress: Float
+
+    /** Which edge the pull is on; see [OverscrollDirection]. */
     val direction: OverscrollDirection
+
+    /** The item's position, as passed to the modifier. Enables stagger. */
     val index: Int
 }
 
