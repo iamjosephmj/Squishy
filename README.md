@@ -34,7 +34,7 @@ repositories { maven { setUrl("https://jitpack.io") } }
 ```
 
 ```kotlin
-dependencies { implementation("com.github.iamjosephmj:Squishy:2.1.0") }
+dependencies { implementation("com.github.iamjosephmj:Squishy:2.1.1") }
 ```
 
 ## The pieces
