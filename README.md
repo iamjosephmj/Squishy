@@ -31,8 +31,12 @@ Column(Modifier.fillMaxSize().overScroll(state)) {
 }
 ```
 
-Drag past an edge — the container rubber-bands and settles back. Fling into an
-edge — leftover velocity becomes a bounce. That's the whole core API.
+*Drag past the end — the whole list stretches like taffy, fights you a little
+more the deeper you pull, and springs home when you let go. Fling into the edge
+and the leftover velocity becomes a bounce.*
+
+That's the entire core API. Everything below is the same state object, wearing
+different clothes.
 
 ## The model
 
@@ -48,18 +52,19 @@ Five packages, five responsibilities:
 
 ## Recipes
 
-### Bounce the whole container
+### Make the whole list squish
 
-`overScroll` is one scrollable that owns both scrolling and the effect — the
-platform stretch never fights you.
+*One modifier and the container itself becomes the spring — no fighting with
+the platform stretch effect.*
 
 ```kotlin
 Column(Modifier.overScroll(state)) { /* rows */ }
 ```
 
-### Items instead of the box
+### Keep the box still — let the items breathe
 
-Suppress the container visual; every child carries the overscroll:
+*The container never moves an inch; every row drifts with the pull like a
+loose stack of cards.*
 
 ```kotlin
 Column(Modifier.overScroll(state, containerEffect = false)) {
@@ -69,10 +74,11 @@ Column(Modifier.overScroll(state, containerEffect = false)) {
 }
 ```
 
-### LazyColumn and any external scrollable
+### Squish a LazyColumn
 
-Lazy lists own their pipeline internally, so route them through `OverScrollArea` —
-edge leftovers feed the effect, the platform stretch is suppressed:
+*Lazy lists bring their own scroll engine. `OverScrollArea` routes their edge
+leftovers into yours and silences the platform effect — one wrapper, any
+nested-scroll-aware scrollable.*
 
 ```kotlin
 OverScrollArea(state, Modifier.fillMaxSize()) {
@@ -80,7 +86,9 @@ OverScrollArea(state, Modifier.fillMaxSize()) {
 }
 ```
 
-### Visual plugins
+### Change the vibe, not the code
+
+*One argument swaps the entire personality of the pull. Built-ins compose with `+`.*
 
 ```kotlin
 val state = rememberOverScrollState(
@@ -89,15 +97,25 @@ val state = rememberOverScrollState(
 )
 ```
 
-Built-ins: `pushDown()`, `zoom()`, `rotate()`, `skew()`, `tilt()`,
-`blur()` (API 31+; pass `minAlpha < 1f` to also fade on older devices), `fade()` —
-combine with `+`. Per-child application pairs with `containerEffect = false`:
+| Visual | What it feels like |
+|---|---|
+| `pushDown()` | The classic — content follows your finger |
+| `zoom()` | The list shrinks toward the edge, like compressing a sponge |
+| `tilt()` | Cards lean into the pull, pivot at the edge |
+| `blur()` | Depth-of-field right at the boundary (API 31+; `minAlpha < 1f` also fades on older devices) |
+| `fade()` | The edge dissolves into the background |
+| `rotate()` / `skew()` | Playful card-deck angles |
+
+Per-child instead of per-container? Pair with `containerEffect = false`:
 
 ```kotlin
 Text(item, Modifier.childOverScrollSupport(state, visual = OverscrollVisuals.tilt()))
 ```
 
-Write your own in three lines — visuals are pure `(value, bounds, orientation) -> Modifier`:
+### Write your own plugin in three lines
+
+*A visual is a pure function of the pull — `(value, bounds, orientation) -> Modifier`.
+No contracts to implement, no way to break the scroll pipeline.*
 
 ```kotlin
 val wobble = OverscrollVisual { value, bounds, _ ->
@@ -105,7 +123,9 @@ val wobble = OverscrollVisual { value, bounds, _ ->
 }
 ```
 
-### Physics
+### Tune the physics like a designer
+
+*A config object, not a subclass. Change a number, drag, feel it.*
 
 ```kotlin
 OverScrollConfig(
@@ -116,18 +136,17 @@ OverScrollConfig(
     absorbDurationMillis = 120,
     minAbsorbVelocity = 50f,
     topEdge = EdgeConfig(enabled = true, maxOverscroll = 300f),
-    bottomEdge = EdgeConfig(enabled = false),
+    bottomEdge = EdgeConfig(enabled = false),  // that edge passes through to parents
 )
 ```
 
-A disabled edge lets the delta pass through to ancestors and skips fling absorb.
-`OverscrollCurve.Custom` takes any `(rawDelta, current, max) -> Float` mapping.
+`OverscrollCurve.Custom` accepts any `(rawDelta, current, max) -> Float` — want
+an exponential wall? Two lines.
 
-### Tag-based animations — the `setTag()` pattern
+### Tag elements like `setTag()`
 
-Register named animations once, then tag items. The scope exposes
-`value` (px), `progress` (0–1), `direction`, and the item's `index` — so one
-registered transform can vary per position (stagger):
+*RecyclerView muscle memory, Compose power: register animations by name once,
+then tag items. Unknown names are a safe no-op.*
 
 ```kotlin
 val state = rememberOverScrollState(
@@ -146,12 +165,18 @@ Column(Modifier.overScroll(state, containerEffect = false)) {
 }
 ```
 
-Roles can also carry plugin visuals: `roles.visual("hero", OverscrollVisuals.tilt())`.
-Unknown names are a safe no-op. The child DSL works the same way if you prefer
-lambdas per item:
+*The `index` in the transform is the item's position — the rows above fan out
+with a stagger instead of moving as one block.* Roles can also carry plugins:
+`roles.visual("hero", OverscrollVisuals.tilt())`.
+
+Prefer lambdas per item? The child DSL gives you the same scope:
+`value` (px), `progress` (0–1), `direction`, `index`:
 
 ```kotlin
-Modifier.childOverScrollSupport(state) { translationY = value * 0.3f; alpha = 1f - progress }
+Modifier.childOverScrollSupport(state) {
+    translationY = value * 0.3f
+    alpha = 1f - progress
+}
 ```
 
 ## The demo app
