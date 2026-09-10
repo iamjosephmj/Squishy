@@ -6,20 +6,24 @@ Overscroll effects for Jetpack Compose that you actually control.
 [![](https://jitpack.io/v/iamjosephmj/Squishy.svg)](https://jitpack.io/#/iamjosephmj/Squishy)
 ![API 21+](https://img.shields.io/badge/API-21%2B-brightgreen)
 
-![Squishy demo](docs/demo.gif)
+## What is overscroll?
 
-Compose gives you the platform stretch and, past that, a cliff: want your list to
-bounce like iOS? Tilt its cards at the edges? You're in nested-scroll territory,
-doing consumption math and hoping you got the contracts right.
+Drag a list and your finger produces scroll delta. The content consumes what it
+can — until you reach an edge. At the edge there is nothing left to scroll, but
+your finger keeps demanding more. That leftover is **overscroll**.
 
-Squishy does that math once and hands you the parts worth caring about. One
-`OverScrollState` per screen drives everything — scroll position, curves, edge
-behavior, visuals, per-item animation. Everything below reads from that one object.
+Two gestures produce it:
 
-This library is a v2, rebuilt from scratch after v1 taught us exactly how
-overscroll goes wrong: state that lagged a frame behind your finger, deltas leaking
-into parent scrollables, the platform stretch fighting custom effects. Those are
-bugs number one, two and three in the changelog of things that don't happen anymore.
+- **Drag past the edge** — leftover *delta* every frame your finger moves
+- **Fling into the edge** — leftover *velocity* once the content runs out of room
+
+Stock Compose hands both to the platform stretch effect, and that's the end of
+the story. You can't read it, shape it, or attach your own motion to it.
+
+Squishy intercepts both leftovers and turns them into state you own: a signed
+pixel offset that resists as it grows and springs back to zero when you let go.
+Everything else in this library is a lens on that one number — where it renders,
+how it curves, which items it moves.
 
 ## Install
 
@@ -31,76 +35,77 @@ repositories { maven { setUrl("https://jitpack.io") } }
 dependencies { implementation("com.github.iamjosephmj:Squishy:2.1.0") }
 ```
 
-## The two-minute version
+## The pieces
+
+### 1. `OverScrollState` — the number, and who owns it
+
+One state per scrolling screen. It carries the overscroll offset and the scroll
+position, and it is the single source that every other piece reads from:
 
 ```kotlin
 val state = rememberOverScrollState(
     config = OverScrollConfig(curve = OverscrollCurve.RubberBand()),
 )
-
-Column(Modifier.fillMaxSize().overScroll(state)) {
-    // content taller than the screen
-}
 ```
 
-Drag past the end and the list stretches, resists harder the deeper you pull, and
-springs back when you let go. Fling into the edge and the leftover velocity becomes
-a bounce. That's the core. The rest is choosing where the effect lands and what it
-looks like.
+| Read | Meaning |
+|---|---|
+| `overscrollOffset` | Signed overscroll in px — positive at the top edge, negative at the bottom |
+| `isOverscrolling` | True while an offset is held or settling |
+| `scrollValue` / `maxScrollValue` | Where the content itself is scrolled |
+| `maxOverscroll` | The configured limit |
 
-## Where the effect lands
+`scrollTo` / `animateScrollTo` are there too, so programmatic scrolling uses the
+same pipeline as gestures.
 
-On the container — the classic:
+### 2. `Modifier.overScroll` — the scroll container
+
+A plain `Column` doesn't scroll. This modifier makes the composable a scroll
+container whose edges produce overscroll on `state`:
 
 ```kotlin
 Column(Modifier.overScroll(state)) { /* rows */ }
 ```
 
-On the items instead — the box holds perfectly still while the rows drift with the
-pull:
+Parameters, one by one:
 
-```kotlin
-Column(Modifier.overScroll(state, containerEffect = false)) {
-    rows.forEach { row ->
-        Text(row, Modifier.childOverScrollSupport(state))
-    }
-}
-```
+- `state` — the state from step 1
+- `containerEffect: Boolean = true` — whether the container itself renders the
+  visual. `false` freezes the box and leaves the effect to the items (step 5)
+- `enabled` — gate gestures without unwiring anything
+- `flingBehavior` — any standard `FlingBehavior`, e.g.
+  [Flinger](https://github.com/iamjosephmj/flinger)'s `FlingPresets.iOSStyle()`.
+  Fling momentum flows through it; whatever it can't consume at the edge arrives
+  in Squishy as bounce
 
-On a LazyColumn — lazy lists bring their own scroll engine, so route their edges
-through `OverScrollArea` (it also silences the platform effect inside):
+### 3. `OverScrollArea` — containers you don't own
+
+`LazyColumn`, `LazyRow`, grids and pagers bring their own scroll engine — you
+can't hand them `overScroll`. Wrap them instead:
 
 ```kotlin
 OverScrollArea(state, Modifier.fillMaxSize()) {
-    LazyColumn(Modifier.fillMaxSize()) { /* items */ }
+    LazyColumn(flingBehavior = FlingPresets.iOSStyle()) { /* items */ }
 }
 ```
 
-`OverScrollArea` works with anything that participates in nested scroll, not just
-lazy lists.
+The area listens on the nested-scroll channel, takes the leftovers their engine
+produces at the edges, feeds them to `state`, and silences the platform stretch
+inside. Works with anything that participates in nested scroll.
 
-## What the pull looks like
+### 4. `OverscrollVisual` — what the offset looks like
 
-Seven built-in visuals. One argument swaps them, `+` stacks them:
+A visual is a pure function from the offset to a `Modifier` — nothing more:
 
 ```kotlin
 val state = rememberOverScrollState(
     visual = OverscrollVisuals.zoom(minScaleX = 0.9f) + OverscrollVisuals.fade(),
-    config = OverScrollConfig(maxOverscroll = 600f),
 )
 ```
 
-The set: `pushDown` (content follows the finger), `zoom`, `tilt`, `fade`, `rotate`,
-`skew`, and `blur` — blur needs API 31; pass `minAlpha < 1f` and older devices get
-the fade instead.
-
-Visuals attach per child too:
-
-```kotlin
-Text(item, Modifier.childOverScrollSupport(state, visual = OverscrollVisuals.tilt()))
-```
-
-And writing your own is a function, not a framework:
+Built-ins: `pushDown` (content follows the finger), `zoom`, `tilt`, `fade`,
+`rotate`, `skew`, `blur` (API 31+; `minAlpha < 1f` degrades to fade below).
+Stack with `+`. Write your own in three lines:
 
 ```kotlin
 val wobble = OverscrollVisual { value, bounds, _ ->
@@ -108,46 +113,21 @@ val wobble = OverscrollVisual { value, bounds, _ ->
 }
 ```
 
-There are no contracts to implement and no way to break the scroll pipeline — a
-visual is just a `Modifier` built from the current pull.
+### 5. Per-item — `childOverScrollSupport` and roles
 
-## How it feels
-
-Physics lives in a config object, not a subclass:
+Items can move while the container holds still (`containerEffect = false`).
+Each item reads the same offset through a small scope:
 
 ```kotlin
-OverScrollConfig(
-    maxOverscroll = 800f,
-    curve = OverscrollCurve.RubberBand(stiffness = 3f),
-    settleSpec = tween(500),              // spring-home animation
-    absorbVelocityFactor = 0.06f,         // fling → bounce strength
-    minAbsorbVelocity = 50f,              // ignore ghost flings
-    topEdge = EdgeConfig(maxOverscroll = 300f),
-    bottomEdge = EdgeConfig(enabled = false),
-)
+Modifier.childOverScrollSupport(state) {
+    translationY = value * 0.3f      // px, signed
+    alpha = 1f - progress            // 0..1 of maxOverscroll
+    // also: direction (Top/Bottom/None), index
+}
 ```
 
-Curves are pluggable: `Linear`, `RubberBand(stiffness)`, or `Custom` with any
-`(rawDelta, current, max) -> Float` mapping — an exponential wall is two lines.
-A disabled edge passes its delta through to parent scrollables instead of eating it.
-
-Fling momentum plugs in the same way — both `overScroll` and your lazy list
-inside `OverScrollArea` take a standard `FlingBehavior`, so
-[Flinger](https://github.com/iamjosephmj/flinger) pairs with it in one line:
-
-```kotlin
-Column(
-    Modifier.overScroll(
-        state,
-        flingBehavior = FlingPresets.iOSStyle(),
-    )
-) { /* rows */ }
-```
-
-## Tags
-
-RecyclerView veterans, you already know this one. `setTag()`, but the tag carries
-an animation:
+Many items with distinct jobs? Register animations by name and tag the items —
+the `setTag()` instinct from RecyclerView days:
 
 ```kotlin
 val roles = rememberOverScrollRoles {
@@ -163,26 +143,72 @@ Column(Modifier.overScroll(state, containerEffect = false)) {
 }
 ```
 
-The scope exposes `value` (px), `progress` (0–1), `direction`, and the item's
-`index` — which is why the `"row"` transform above staggers instead of moving as
-one block. Roles can carry visuals too:
-`roles.visual("hero", OverscrollVisuals.tilt())`. Unknown names do nothing, so
-dynamic lists can't crash on stale tags.
+`index` is the item's position, so one registered transform can stagger. Roles
+can carry visuals too: `roles.visual("hero", OverscrollVisuals.tilt())`.
+Unknown names do nothing — dynamic lists can't crash on stale tags.
 
-If you'd rather skip the registry, the child DSL gives you the same scope inline:
+### 6. `OverScrollConfig` — how the offset behaves
 
 ```kotlin
-Modifier.childOverScrollSupport(state) {
-    translationY = value * 0.3f
-    alpha = 1f - progress
+OverScrollConfig(
+    maxOverscroll = 800f,                                  // the wall
+    curve = OverscrollCurve.RubberBand(stiffness = 3f),    // resistance shape
+    settleSpec = tween(500),                               // spring-home
+    absorbVelocityFactor = 0.06f,                          // fling → bounce
+    minAbsorbVelocity = 50f,                               // ignore ghosts
+    topEdge = EdgeConfig(maxOverscroll = 300f),            // per-edge limits
+    bottomEdge = EdgeConfig(enabled = false),              // pass-through
+)
+```
+
+Curves map raw delta to offset growth: `Linear`, `RubberBand` (deeper pulls
+cost more), or `Custom(rawDelta, current, max)`. A disabled edge lets its
+delta continue to parent scrollables instead of eating it.
+
+## Wiring it together
+
+Every piece at once — a lazy feed with a header, tagged rows, a rubber band,
+and a custom fling:
+
+```kotlin
+@Composable
+fun Feed() {
+    val state = rememberOverScrollState(                    // 1. the number
+        config = OverScrollConfig(
+            maxOverscroll = 600f,
+            curve = OverscrollCurve.RubberBand(),
+        ),
+    )
+    val roles = rememberOverScrollRoles {                   // 5. named layers
+        transform("header") {
+            translationY = value * 0.10f
+            scaleY = 1f - progress * 0.08f
+        }
+        transform("row") { translationY = value * (0.20f + index * 0.01f) }
+    }
+
+    OverScrollArea(state, Modifier.fillMaxSize()) {         // 3. lazy support
+        LazyColumn(flingBehavior = FlingPresets.iOSStyle()) {
+            item {                                          // header rides too
+                Text("Feed", Modifier.overscrollRole(state, roles, "header"))
+            }
+            items(posts) { post ->
+                Post(post, Modifier.overscrollRole(state, roles, "row"))
+            }
+        }
+    }
 }
 ```
 
+Drag the list mid-content: plain scrolling, Flinger momentum. Hit an edge: the
+rubber band takes over — header lags, rows fan out by index. Let go: everything
+springs home on `settleSpec`. Fling hard into the bottom: leftover velocity
+becomes one bounce and settles.
+
 ## The demo app
 
-The `app` module in this repo is documentation you can touch. Six chambers, each
-with live overscroll telemetry (px, progress, scroll, status) so you can watch the
-numbers move while you feel the physics:
+The `app` module is documentation you can touch. Six chambers, each with live
+overscroll telemetry (px, progress, scroll, status):
 
 1. **Container** — the two-minute version, running
 2. **Child mode** — box frozen, rows drifting
