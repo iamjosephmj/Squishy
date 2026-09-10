@@ -167,11 +167,16 @@ Modifier.childOverScrollSupport(state) {
 
 ## The demo app
 
-The `app` module in this repo is documentation you can touch. Six chambers, live
-overscroll telemetry on every screen:
+The `app` module in this repo is documentation you can touch. Six chambers, each
+with live overscroll telemetry (px, progress, scroll, status) so you can watch the
+numbers move while you feel the physics:
 
-1. Container · 2. Child mode · 3. Lazy column · 4. Plugin playground ·
-5. Curves & edges (live physics tuning) · 6. Tagged roles
+1. **Container** — the two-minute version, running
+2. **Child mode** — box frozen, rows drifting
+3. **Lazy column** — `OverScrollArea` around a real list
+4. **Plugin playground** — swap all seven visuals live, mid-gesture
+5. **Curves & edges** — tune the physics, apply, drag, repeat
+6. **Tagged roles** — the registry pattern with a per-row depth readout
 
 Clone, run, poke.
 
