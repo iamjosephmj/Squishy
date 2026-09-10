@@ -1,4 +1,4 @@
-package io.iamjosephmj.squishy.screens
+package io.iamjosephmj.squishy.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
