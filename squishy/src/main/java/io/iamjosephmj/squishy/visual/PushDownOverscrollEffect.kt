@@ -1,4 +1,4 @@
-package io.iamjosephmj.squishy
+package io.iamjosephmj.squishy.visual
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
+import io.iamjosephmj.squishy.physics.BaseOverscrollEffect
 import kotlin.math.roundToInt
 
 class PushDownOverscrollEffect(

@@ -1,5 +1,11 @@
 package io.iamjosephmj.squishy.screens
 
+import io.iamjosephmj.squishy.child.*
+import io.iamjosephmj.squishy.physics.*
+import io.iamjosephmj.squishy.scroll.*
+import io.iamjosephmj.squishy.state.*
+import io.iamjosephmj.squishy.visual.*
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,14 +34,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.iamjosephmj.squishy.OverScrollArea
-import io.iamjosephmj.squishy.OverScrollConfig
-import io.iamjosephmj.squishy.OverScrollRoles
-import io.iamjosephmj.squishy.OverScrollState
-import io.iamjosephmj.squishy.OverscrollCurve
-import io.iamjosephmj.squishy.overscrollRole
-import io.iamjosephmj.squishy.rememberOverScrollRoles
-import io.iamjosephmj.squishy.rememberOverScrollState
 import io.iamjosephmj.squishy.ui.ApertureCard
 import io.iamjosephmj.squishy.ui.CosmicBackground
 import io.iamjosephmj.squishy.ui.Eyebrow

@@ -1,4 +1,4 @@
-package io.iamjosephmj.squishy
+package io.iamjosephmj.squishy.physics
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
@@ -43,6 +43,11 @@ abstract class BaseOverscrollEffect(
 
     protected fun axisOffset(axisDelta: Float): Offset =
         if (orientation == Orientation.Vertical) Offset(0f, axisDelta) else Offset(axisDelta, 0f)
+
+    internal fun topMax(): Float = if (topEdge.enabled) topEdge.effectiveMax(maxOverscroll) else 0f
+
+    internal fun bottomMax(): Float =
+        if (bottomEdge.enabled) bottomEdge.effectiveMax(maxOverscroll) else 0f
 
     override fun applyToScroll(
         delta: Offset,
@@ -121,13 +126,8 @@ abstract class BaseOverscrollEffect(
         }
     }
 
-    abstract override val effectModifier: Modifier
-
     private fun velocityAxisValue(velocity: Velocity): Float =
         if (orientation == Orientation.Vertical) velocity.y else velocity.x
 
-    internal fun topMax(): Float = if (topEdge.enabled) topEdge.effectiveMax(maxOverscroll) else 0f
-
-    internal fun bottomMax(): Float =
-        if (bottomEdge.enabled) bottomEdge.effectiveMax(maxOverscroll) else 0f
+    abstract override val effectModifier: Modifier
 }

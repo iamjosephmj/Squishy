@@ -1,5 +1,11 @@
 package io.iamjosephmj.squishy.ui
 
+import io.iamjosephmj.squishy.child.*
+import io.iamjosephmj.squishy.physics.*
+import io.iamjosephmj.squishy.scroll.*
+import io.iamjosephmj.squishy.state.*
+import io.iamjosephmj.squishy.visual.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.iamjosephmj.squishy.OverScrollState
 import io.iamjosephmj.squishy.ui.theme.ApertureBg2
 import io.iamjosephmj.squishy.ui.theme.ApertureLine
 import io.iamjosephmj.squishy.ui.theme.ApertureLine2

@@ -1,5 +1,11 @@
 package io.iamjosephmj.squishy.screens
 
+import io.iamjosephmj.squishy.child.*
+import io.iamjosephmj.squishy.physics.*
+import io.iamjosephmj.squishy.scroll.*
+import io.iamjosephmj.squishy.state.*
+import io.iamjosephmj.squishy.visual.*
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -34,15 +40,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.iamjosephmj.squishy.EdgeConfig
-import io.iamjosephmj.squishy.OverScrollConfig
-import io.iamjosephmj.squishy.OverscrollCurve
-import io.iamjosephmj.squishy.OverscrollVisual
-import io.iamjosephmj.squishy.OverscrollVisuals
-import io.iamjosephmj.squishy.childOverScrollSupport
-import io.iamjosephmj.squishy.overScroll
-import io.iamjosephmj.squishy.plus
-import io.iamjosephmj.squishy.rememberOverScrollState
 import io.iamjosephmj.squishy.ui.ApertureChip
 import io.iamjosephmj.squishy.ui.ApertureCard
 import io.iamjosephmj.squishy.ui.SectionLabel
