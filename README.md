@@ -130,6 +130,9 @@ Register named animations once, then tag items. The scope exposes
 registered transform can vary per position (stagger):
 
 ```kotlin
+val state = rememberOverScrollState(
+    config = OverScrollConfig(curve = OverscrollCurve.RubberBand()),
+)
 val roles = rememberOverScrollRoles {
     transform("header") { translationY = value * 0.10f }
     transform("row") { translationY = value * (0.22f + index * 0.012f) }
