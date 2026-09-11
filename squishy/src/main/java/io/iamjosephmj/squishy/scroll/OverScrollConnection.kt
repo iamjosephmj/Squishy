@@ -3,7 +3,6 @@ package io.iamjosephmj.squishy.scroll
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.overscroll
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -22,25 +21,23 @@ import io.iamjosephmj.squishy.state.OverScrollState
 fun Modifier.overScrollConnection(
     state: OverScrollState,
     containerEffect: Boolean = true,
-): Modifier = composed {
-    this
-        .clipToBounds()
-        .then(if (containerEffect) Modifier.overscroll(state.effect) else Modifier)
-        .nestedScroll(
-            object : NestedScrollConnection {
-                override fun onPostScroll(
-                    consumed: Offset,
-                    available: Offset,
-                    source: NestedScrollSource
-                ): Offset = state.effect.applyToScroll(available, source) { Offset.Zero }
+): Modifier = this
+    .clipToBounds()
+    .then(if (containerEffect) Modifier.overscroll(state.effect) else Modifier)
+    .nestedScroll(
+        object : NestedScrollConnection {
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset = state.effect.applyToScroll(available, source) { Offset.Zero }
 
-                override suspend fun onPostFling(
-                    consumed: Velocity,
-                    available: Velocity
-                ): Velocity {
-                    state.effect.applyToFling(available) { Velocity.Zero }
-                    return available
-                }
+            override suspend fun onPostFling(
+                consumed: Velocity,
+                available: Velocity
+            ): Velocity {
+                state.effect.applyToFling(available) { Velocity.Zero }
+                return available
             }
-        )
-}
+        }
+    )

@@ -1,8 +1,6 @@
 package io.iamjosephmj.squishy.child
 
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -47,24 +45,23 @@ fun rememberOverScrollRoles(builder: OverScrollRoles.() -> Unit): OverScrollRole
  * `visual` the registry holds under that name, driven by [state]. Unknown
  * names render nothing, so dynamic lists can't crash on stale tags.
  *
+ * A plain modifier factory: the registry lookup happens when the caller
+ * recomposes, so re-registering a role under the same name updates tagged
+ * items on their next recomposition.
+ *
  * @param roles the screen's registry; see [rememberOverScrollRoles]
  * @param name the role to look up
  * @param index the item's position, surfaced to the transform for stagger
  */
-@OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.overscrollRole(
     state: OverScrollState,
     roles: OverScrollRoles,
     name: String,
     index: Int = 0,
-): Modifier = composed(
-    fullyQualifiedName = "io.iamjosephmj.squishy.overscrollRole",
-    key1 = name to index,
-) {
+): Modifier {
     val transform = roles.transforms[name]
     val visual = roles.visuals[name]
-    var scope: ChildOverscrollScopeImpl? = null
-    this
+    return this
         .then(
             visual?.visual(
                 { state.overscrollOffset },
@@ -74,15 +71,8 @@ fun Modifier.overscrollRole(
         )
         .then(
             if (transform != null) {
-                Modifier.graphicsLayer {
-                    val cached = scope
-                    val impl = if (cached != null && cached.layer === this) {
-                        cached
-                    } else {
-                        ChildOverscrollScopeImpl(state, this, index).also { scope = it }
-                    }
-                    impl.transform()
-                }
+                val runner = ChildTransformRunner(state, index, transform)
+                Modifier.graphicsLayer { runner.runIn(this) }
             } else {
                 Modifier
             }

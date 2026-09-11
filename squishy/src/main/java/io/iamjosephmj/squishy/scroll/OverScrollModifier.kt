@@ -20,12 +20,18 @@ import io.iamjosephmj.squishy.state.OverScrollState
  * produces no overscroll. Requires bounded constraints along [OverScrollState.orientation]
  * (like `verticalScroll` does).
  *
+ * `composed` is kept for a single read of [LocalLayoutDirection] — the same
+ * reason foundation's `verticalScroll` keeps it: the value is baked into
+ * foundation's scroll node at construction, so only composition can supply it
+ * reactively. Everything else in the chain is stateless element composition.
+ *
  * @param state the screen's overscroll state
  * @param enabled when false, gestures are ignored without unwiring anything
  * @param containerEffect whether the container itself renders the state's
  *   visual. `false` freezes the box and leaves rendering to the items
  * @param flingBehavior any [FlingBehavior] (e.g. Flinger presets). Leftover
- *   velocity it can't consume at an edge becomes a bounce on [state]
+ *   velocity it can't consume at an edge becomes a bounce on [state]; `null`
+ *   uses the platform spline default
  */
 @OptIn(ExperimentalFoundationApi::class)
 fun Modifier.overScroll(
@@ -34,20 +40,21 @@ fun Modifier.overScroll(
     containerEffect: Boolean = true,
     flingBehavior: FlingBehavior? = null,
 ): Modifier = composed {
+    val reverseDirection = ScrollableDefaults.reverseDirection(
+        LocalLayoutDirection.current,
+        state.orientation,
+        false
+    )
     this
         .clipToBounds()
         .then(if (containerEffect) Modifier.overscroll(state.effect) else Modifier)
         .scrollable(
             state = state.scrollState,
             orientation = state.orientation,
-            enabled = enabled,
-            reverseDirection = ScrollableDefaults.reverseDirection(
-                LocalLayoutDirection.current,
-                state.orientation,
-                false
-            ),
-            flingBehavior = flingBehavior ?: ScrollableDefaults.flingBehavior(),
             overscrollEffect = state.effect,
+            enabled = enabled,
+            reverseDirection = reverseDirection,
+            flingBehavior = flingBehavior,
         )
         .scrollingLayout(state)
 }
