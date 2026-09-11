@@ -46,8 +46,9 @@ import io.iamjosephmj.squishy.ui.theme.TextSoft
 private val WordmarkStroke = Stroke(width = 1.4f)
 
 /**
- * The hub: wordmark, hero and the chamber cards, on a rubber band with
- * tagged roles — header lags at 0.10x, cards fan out 0.22x + 0.012 per index.
+ * The hub: wordmark, hero and the chamber cards, on a rubber band with tagged
+ * roles — header lags at 0.10x, section copy at 0.16x, cards fan out
+ * 0.22x + 0.012 per index. Same depth registry as the tagged-roles chamber.
  */
 @Composable
 fun HomeScreen(onOpen: (DemoScreen) -> Unit) {
@@ -58,6 +59,7 @@ fun HomeScreen(onOpen: (DemoScreen) -> Unit) {
     )
     val roles = rememberOverScrollRoles {
         transform("header") { translationY = value * 0.10f }
+        transform("section") { translationY = value * 0.16f }
         transform("row") { translationY = value * (0.22f + index * 0.012f) }
     }
     Box {
@@ -99,7 +101,7 @@ fun HomeScreen(onOpen: (DemoScreen) -> Unit) {
                 item {
                     Eyebrow(
                         "overscroll toolkit · jetpack compose",
-                        Modifier.overscrollRole(state, roles, "header"),
+                        Modifier.overscrollRole(state, roles, "section"),
                     )
                 }
                 item {
@@ -127,7 +129,9 @@ fun HomeScreen(onOpen: (DemoScreen) -> Unit) {
                             "tune the physics, animate every item. Pick a chamber below.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextSoft,
-                        modifier = Modifier.padding(top = 10.dp, bottom = 18.dp),
+                        modifier = Modifier
+                            .padding(top = 10.dp, bottom = 18.dp)
+                            .overscrollRole(state, roles, "section"),
                     )
                 }
                 DemoScreen.entries.forEachIndexed { position, demo ->

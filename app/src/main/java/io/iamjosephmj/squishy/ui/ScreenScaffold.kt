@@ -13,15 +13,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.iamjosephmj.squishy.ui.CosmicBackground
 import io.iamjosephmj.squishy.ui.theme.ApertureLine
@@ -48,20 +45,11 @@ fun ScreenScaffold(
                     .fillMaxWidth()
                     .background(Color(0xB305070D))
                     .statusBarsPadding()
-                    .padding(horizontal = 8.dp, vertical = 12.dp),
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = "‹ BACK",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = TextBright,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(onClick = onBack)
-                        .padding(horizontal = 10.dp, vertical = 6.dp),
-                )
-                Spacer(Modifier.width(12.dp))
+                CircularBackButton(onClick = onBack)
+                Spacer(Modifier.width(14.dp))
                 Text(
                     text = title.uppercase(),
                     style = MaterialTheme.typography.labelSmall,

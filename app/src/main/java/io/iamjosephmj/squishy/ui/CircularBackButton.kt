@@ -6,19 +6,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.iamjosephmj.squishy.ui.theme.ApertureLine2
 import io.iamjosephmj.squishy.ui.theme.TextBright
 
+/** Circular back control: outlined disc with a backward arrow, 44dp touch target. */
 @Composable
 fun CircularBackButton(
     onClick: () -> Unit,
@@ -33,12 +33,11 @@ fun CircularBackButton(
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = "‹",
-            color = TextBright,
-            fontSize = 22.sp,
-            lineHeight = 24.sp,
-            fontWeight = FontWeight.Medium,
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = "Back",
+            tint = TextBright,
+            modifier = Modifier.size(20.dp),
         )
     }
 }
