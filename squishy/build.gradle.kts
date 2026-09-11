@@ -58,7 +58,7 @@ afterEvaluate {
 
                 groupId = "io.iamjosephmj.squishy"
                 artifactId = "squishy"
-                version = "2.1.1"
+                version = "2.2.0"
             }
         }
     }
