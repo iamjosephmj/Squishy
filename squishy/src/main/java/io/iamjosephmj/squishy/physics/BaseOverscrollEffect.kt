@@ -67,6 +67,29 @@ abstract class BaseOverscrollEffect(
     protected fun axisOffset(axisDelta: Float): Offset =
         if (orientation == Orientation.Vertical) Offset(0f, axisDelta) else Offset(axisDelta, 0f)
 
+    /**
+     * Releases existing tension from a delta and returns the consumed portion.
+     * Takes from the delta, linearly, up to the held offset — anything left
+     * over still belongs to the caller's scroll. `onPreScroll` uses this so a
+     * container's tension unwinds before descendant scrollables move; a
+     * post-scroll leftover can never carry the recovery (children at an edge
+     * scroll back into range and consume it first).
+     */
+    internal fun releaseFrom(delta: Offset): Offset {
+        val axisDelta = axisValue(delta)
+        // An on-axis grab ends the running animation here, on the pre-scroll
+        // path — the post-scroll cancel never sees it, because the release
+        // already consumed the delta before it could.
+        if (abs(axisDelta) > 0.5f) settleJob?.cancel()
+        val release = when {
+            value > 0f -> axisDelta.coerceIn(-value, 0f)
+            value < 0f -> axisDelta.coerceIn(0f, -value)
+            else -> 0f
+        }
+        if (release != 0f) offsetState.floatValue = value + release
+        return axisOffset(release)
+    }
+
     /** Effective positive-side limit: 0 when the leading edge is disabled. */
     internal fun topMax(): Float = if (topEdge.enabled) topEdge.effectiveMax(maxOverscroll) else 0f
 
@@ -93,17 +116,12 @@ abstract class BaseOverscrollEffect(
         source: NestedScrollSource,
         performScroll: (Offset) -> Offset
     ): Offset {
-        settleJob?.cancel()
-        val axisDelta = axisValue(delta)
-
-        val release = when {
-            value > 0f -> axisDelta.coerceIn(-value, 0f)
-            value < 0f -> axisDelta.coerceIn(0f, -value)
-            else -> 0f
-        }
-        if (release != 0f) offsetState.floatValue = value + release
-
-        val remainder = axisDelta - release
+        // Only a delta with content on this axis ends the running settle — a
+        // grab must win, but a cross-axis scroll flowing through (a horizontal
+        // row inside a vertical container, say) must not freeze the bounce.
+        if (abs(axisValue(delta)) > 0.5f) settleJob?.cancel()
+        val release = axisValue(releaseFrom(delta))
+        val remainder = axisValue(delta) - release
         val consumedByScrollOffset = performScroll(axisOffset(remainder))
         val consumedByScroll = axisValue(consumedByScrollOffset)
         val offAxisConsumed = consumedByScrollOffset - axisOffset(consumedByScroll)
@@ -141,12 +159,26 @@ abstract class BaseOverscrollEffect(
         velocity: Velocity,
         performFling: suspend (Velocity) -> Velocity
     ) {
-        settleJob?.cancel()
         val consumed = performFling(velocity)
         val leftoverVelocity = velocityAxisValue(velocity) - velocityAxisValue(consumed)
         val job = requireNotNull(coroutineContext[Job]) {
             "applyToFling must be called from a coroutine scope"
         }
+        if (settleJob != null && abs(leftoverVelocity) <= minAbsorbVelocity) {
+            // A bounce is already animating and this fling carries nothing on
+            // this axis — a cross-axis fling completing under a vertical
+            // container, or a spent one. Cancelling here used to cut the
+            // rising bounce short and settle it away. The running absorb and
+            // settle already end at zero; leave them alone.
+            return
+        }
+        if (value == 0f && abs(leftoverVelocity) <= minAbsorbVelocity) {
+            // Nothing to absorb and no tension to settle: return immediately.
+            // Awaiting the settle animation here used to stall every fling
+            // completing under this container by the settle duration.
+            return
+        }
+        settleJob?.cancel()
         settleJob = job
         try {
             if (abs(leftoverVelocity) > minAbsorbVelocity) {
@@ -158,14 +190,18 @@ abstract class BaseOverscrollEffect(
                     if (peak != value) {
                         settleAnimatable.snapTo(value)
                         settleAnimatable.animateTo(peak, tween(absorbDurationMillis)) {
-                            offsetState.floatValue = value
+                            // A cancelled job still processes one in-flight
+                            // frame before the cancellation lands — without
+                            // this guard it overwrites the grab's first
+                            // release with the pre-grab trajectory.
+                            if (job.isActive) offsetState.floatValue = value
                         }
                     }
                 }
             }
             settleAnimatable.snapTo(value)
             settleAnimatable.animateTo(0f, animationSpec) {
-                offsetState.floatValue = value
+                if (job.isActive) offsetState.floatValue = value
             }
         } finally {
             if (settleJob === job) settleJob = null
