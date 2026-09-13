@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.iamjosephmj.flinger.behaviours.FlingPresets
 import io.iamjosephmj.squishy.navigation.DemoScreen
 import io.iamjosephmj.squishy.physics.OverScrollConfig
 import io.iamjosephmj.squishy.scroll.OverScrollArea
@@ -55,7 +56,7 @@ fun NestedAxesScreen(onBack: () -> Unit) {
                 Column(
                     Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .verticalScroll(rememberScrollState(), flingBehavior = FlingPresets.iOSStyle())
                         .padding(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
@@ -66,7 +67,7 @@ fun NestedAxesScreen(onBack: () -> Unit) {
                         Modifier
                             .fillMaxWidth()
                             .height(120.dp)
-                            .overScroll(horizontalState),
+                            .overScroll(horizontalState, flingBehavior = FlingPresets.iOSStyle()),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         repeat(10) { index ->
