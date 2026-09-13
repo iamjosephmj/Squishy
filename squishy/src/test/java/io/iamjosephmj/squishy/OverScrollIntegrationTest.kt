@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
@@ -149,6 +151,76 @@ class OverScrollIntegrationTest {
             assertTrue(
                 "LazyColumn edge drag should feed the overscroll effect",
                 peakOverscroll.floatValue > 0f
+            )
+        }
+    }
+
+    @Test
+    fun reversingDragAtEdge_releasesParentTension_beforeFingerLifts() {
+        lateinit var state: OverScrollState
+        lateinit var listState: LazyListState
+        val peakOverscroll = mutableFloatStateOf(0f)
+        composeRule.setContent {
+            state = rememberOverScrollState()
+            listState = rememberLazyListState(initialFirstVisibleItemIndex = 19)
+            LaunchedEffect(state) {
+                snapshotFlow { state.overscrollOffset }.collect {
+                    if (abs(it) > peakOverscroll.floatValue) peakOverscroll.floatValue = abs(it)
+                }
+            }
+            OverScrollArea(state, Modifier.fillMaxSize()) {
+                LazyColumn(Modifier.fillMaxSize(), state = listState) {
+                    items(count = 20) { index ->
+                        BasicText(
+                            text = "lazy $index",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        )
+                    }
+                }
+            }
+        }
+        composeRule.waitForIdle()
+        composeRule.runOnIdle {
+            assertTrue(
+                "list should start pinned at its bottom edge",
+                !listState.canScrollForward
+            )
+        }
+
+        // Push past the edge, reverse, and lift in one gesture. The push is
+        // pure overscroll (the list cannot move); the reversal must unwind
+        // that tension before the list scrolls back, so the list may only
+        // take the reversal distance the parent did not absorb. If release
+        // only happened at finger lift, the list would take all of it.
+        composeRule.onRoot().performTouchInput {
+            down(center)
+            repeat(30) {
+                moveBy(Offset(0f, -30f), delayMillis = 50)
+            }
+            repeat(30) {
+                moveBy(Offset(0f, 30f), delayMillis = 50)
+            }
+            repeat(10) {
+                moveBy(Offset(0f, 5f), delayMillis = 100)
+            }
+            up()
+        }
+        composeRule.waitUntil(5_000) { state.overscrollOffset == 0f }
+        composeRule.runOnIdle {
+            assertTrue(
+                "parent should have absorbed the push",
+                peakOverscroll.floatValue > 300f
+            )
+            val scrolledBack = (
+                listState.firstVisibleItemIndex * 525 +
+                    listState.firstVisibleItemScrollOffset
+                )
+            assertTrue(
+                "reversal must unwind the parent, not scroll the list; " +
+                    "list ended $scrolledBack px from the top",
+                scrolledBack > 8820 - 400
             )
         }
     }

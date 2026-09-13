@@ -189,4 +189,117 @@ class BaseOverscrollEffectTest {
             assertEquals(0f, effect.value)
         }
     }
+
+    @Test
+    fun spentFlingCompletion_midAbsorb_doesNotCancelTheAbsorb() = runTest {
+        withContext(TestMonotonicFrameClock(backgroundScope)) {
+            val effect = TestEffect(maxOverscroll = 3000f)
+            // Fling into the edge: leftover velocity rises toward 900 over
+            // the 120 ms absorb.
+            val absorb = launch { effect.applyToFling(Velocity(0f, 15_000f)) { Velocity.Zero } }
+            advanceTimeBy(50)
+            runCurrent()
+            val midAbsorbValue = effect.value
+            assertTrue(
+                "absorb should be mid-rise; value was $midAbsorbValue",
+                midAbsorbValue > 200f
+            )
+
+            // A horizontal (cross-axis) fling completes while the vertical
+            // bounce is rising: it carries nothing on this axis and must not
+            // cancel the running absorb.
+            val spent = launch { effect.applyToFling(Velocity(500f, 0f)) { Velocity.Zero } }
+            advanceTimeBy(60)
+            runCurrent()
+            assertTrue(
+                "absorb must survive a spent cross-axis fling; value was ${effect.value}",
+                effect.value > 400f
+            )
+
+            // The bounce still completes its full rise and settles.
+            advanceTimeBy(1_000)
+            runCurrent()
+            assertEquals(0f, effect.value)
+            absorb.cancel()
+            spent.cancel()
+        }
+    }
+
+    @Test
+    fun crossAxisScrollDuringSettle_doesNotCancelTheSettle() = runTest {
+        withContext(TestMonotonicFrameClock(backgroundScope)) {
+            val effect = TestEffect(maxOverscroll = 3000f)
+            val settle = launch { effect.applyToFling(Velocity(0f, 15_000f)) { Velocity.Zero } }
+            // Absorb runs 120 ms; this lands mid-settle.
+            advanceTimeBy(150)
+            runCurrent()
+            val midSettleValue = effect.value
+            assertTrue(
+                "settle should be in flight; value was $midSettleValue",
+                midSettleValue > 500f
+            )
+
+            // A horizontal row scrolls underneath: its dispatch reaches this
+            // vertical effect as a cross-axis delta and must not disturb the
+            // vertical settle.
+            effect.applyToScroll(Offset(-30f, 0f), NestedScrollSource.UserInput) {
+                Offset(-30f, 0f)
+            }
+
+            advanceTimeBy(1_000)
+            runCurrent()
+            assertEquals(
+                "vertical settle must complete despite cross-axis scroll; " +
+                    "value was ${effect.value}",
+                0f,
+                effect.value
+            )
+            settle.cancel()
+        }
+    }
+
+    @Test
+    fun spentFling_withNothingInFlight_returnsWithoutStalling() = runTest {
+        withContext(TestMonotonicFrameClock(backgroundScope)) {
+            val effect = TestEffect(maxOverscroll = 3000f)
+            val spent = launch {
+                effect.applyToFling(Velocity(500f, 0f)) { Velocity.Zero }
+            }
+            advanceTimeBy(1)
+            runCurrent()
+            assertTrue(
+                "a fling with nothing to absorb or settle must not stall the gesture",
+                spent.isCompleted
+            )
+        }
+    }
+
+    @Test
+    fun onAxisGrabThroughRelease_cancelsRunningSettle() = runTest {
+        withContext(TestMonotonicFrameClock(backgroundScope)) {
+            val effect = TestEffect(maxOverscroll = 3000f)
+            val bounce = launch { effect.applyToFling(Velocity(0f, 15_000f)) { Velocity.Zero } }
+            advanceTimeBy(150)
+            runCurrent()
+            val grabbedValue = effect.value
+            assertTrue(
+                "bounce should be mid-flight; value was $grabbedValue",
+                grabbedValue > 500f
+            )
+
+            // A grab lands on the pre-scroll path: releasing tension must
+            // cancel the running animation, or both fight over the offset.
+            effect.releaseFrom(Offset(0f, -50f))
+
+            advanceTimeBy(200)
+            runCurrent()
+            assertEquals(
+                "the grab must own the offset; animation kept driving it",
+                grabbedValue - 50f,
+                effect.value,
+                0.5f
+            )
+            bounce.cancel()
+        }
+    }
 }
